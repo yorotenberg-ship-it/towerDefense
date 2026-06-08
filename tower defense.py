@@ -111,14 +111,21 @@ while running:
             if tower.type == "range":
                 pygame.draw.rect(screen, (255, 0, 0), tower.rect)
                 if tick == 0 and (not tower.rect == towers[-1].rect or placing == False):
-                    closest = None
-                    closestDist = 'inf'
-                    for enemy in enemies:
-                        xDiff = abs(tower.x - enemy.x)
-                        yDiff = abs(tower.y - enemy.y)
-                        if math.hypot(xDiff, yDiff) < closestDist:
-                            closest = enemy
-                            closestDist = math.hypot(xDiff, yDiff)
+                    if not enemies == []
+                        closest = None
+                        closestDist = 'inf'
+                        for enemy in enemies:
+                            xDiff = abs(tower.x - enemy.x)
+                            yDiff = abs(tower.y - enemy.y)
+                            if math.hypot(xDiff, yDiff) < closestDist:
+                                closest = enemy
+                                closestDist = math.hypot(xDiff, yDiff)
+                        for enemy in enemies:
+                            if enemy == closest:
+                                enemy = Enemy(enemy.health - 50, enemy.type, enemy.speed, enemy.x, enemy.y)
+                                break
+                    
+            
                     #weapons.append(Weapon(tower.x + (tower.w - 20) // 2, tower.y + (tower.w - 20) // 2, 0, 0, 50, "range"))
             elif tower.type == "short":
                 pygame.draw.rect(screen, (255, 255, 0), tower.rect)
