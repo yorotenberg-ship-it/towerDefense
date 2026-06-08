@@ -12,7 +12,6 @@ cash = 500
 towersWidth = 50
 towersHeight = 50
 
-x = 2
 
 class Tower:
     def __init__ (Tower, towerX, towerY, width, height, towerType = None, sellerType = False, sellerCost = 0):
