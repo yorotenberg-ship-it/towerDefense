@@ -2,11 +2,10 @@ import pygame, sys, os, time, math
 clock = pygame.time.Clock()
 pygame.display.set_caption("Tower Defense Game")
 pygame.init()
-screen = pygame.display.set_mode((1219, 814))
+screen = pygame.display.set_mode((1, 1))
 background = pygame.image.load("map.png")
 background = pygame.transform.scale(background, (1219, 814))
 running = True
-BLACK = (0, 0, 0)
 placing = False
 down = False
 collide=False
@@ -89,6 +88,7 @@ placingType = None
 
 tick=0
 while running:
+
     tick += 1
     tick = tick % 60
     mouseX, mouseY = pygame.mouse.get_pos()
