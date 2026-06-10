@@ -97,7 +97,7 @@ while running:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
-                    enemies.append(Enemy(100, "normal", 3, 0, 170))
+                    enemies.append(Enemy(1, "normal", 3, 0, 170))
                 else:
                     if placing == False:
                         for tower in towers:
@@ -152,9 +152,7 @@ while running:
                     
                     for enemy in enemies:
                             if enemy == closest:
-                                enemy.health -= 25
-                                print(tower.x, tower.y)
-                                print("sniped!")
+                                enemy.health -= 5
                                 
 
                     #weapons.append(Weapon(tower.x + (tower.w - 20) // 2, tower.y + (tower.w - 20) // 2, 0, 0, 50, "range"))
@@ -163,7 +161,7 @@ while running:
             elif tower.type == "area":
                 pygame.draw.rect(screen, (255, 255, 255), tower.rect)
                 if not tower.rect == towers[-1].rect or placing == False:
-                    weapons.append(Weapon(tower.x + tower.w // 2, tower.y + tower.h // 2, 0, 0, 20, "area", 80))
+                    weapons.append(Weapon(tower.x + tower.w // 2, tower.y + tower.h // 2, 0, 0, 20, "area", 2))
     for weapon in weapons:
         if weapon.type == 'range':
             pygame.draw.rect(screen, (255, 255, 255), weapon.rect)
