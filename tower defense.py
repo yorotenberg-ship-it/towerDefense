@@ -89,6 +89,7 @@ placingType = None
 
 tick=0
 while running:
+    tick += 1
     tick = tick % 60
     mouseX, mouseY = pygame.mouse.get_pos()
     for event in pygame.event.get():
@@ -96,7 +97,7 @@ while running:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
-                    enemies.append(Enemy(100, "normal", 1, 0, 170))
+                    enemies.append(Enemy(100, "normal", 3, 0, 170))
                 else:
                     if placing == False:
                         for tower in towers:
@@ -115,7 +116,7 @@ while running:
                                 if collide == True: break
                             
                         if collide == False: 
-                            towers.append(Tower(mouseX - towersWidth // 2, mouseY - towersHeight // 2, towersWidth, towersHeight, placingType))
+                            
                             placing = False
     #print(placing)
     
@@ -139,15 +140,23 @@ while running:
         else: 
             if tower.type == "range":
                 pygame.draw.rect(screen, (255, 0, 0), tower.rect)
-                if tick == 0 and (not tower.rect == towers[-1].rect or placing == False):
+                if tick == 30 and (not tower.rect == towers[-1].rect or placing == False):
                     closest = None
-                    closestDist = 'inf'
+                    closestDist = 9999999999999
                     for enemy in enemies:
                         xDiff = abs(tower.x - enemy.x)
                         yDiff = abs(tower.y - enemy.y)
                         if math.hypot(xDiff, yDiff) < closestDist:
                             closest = enemy
                             closestDist = math.hypot(xDiff, yDiff)
+                    
+                    for enemy in enemies:
+                            if enemy == closest:
+                                enemy.health -= 25
+                                print(tower.x, tower.y)
+                                print("sniped!")
+                                
+
                     #weapons.append(Weapon(tower.x + (tower.w - 20) // 2, tower.y + (tower.w - 20) // 2, 0, 0, 50, "range"))
             elif tower.type == "short":
                 pygame.draw.rect(screen, (255, 255, 0), tower.rect)
@@ -162,13 +171,15 @@ while running:
             pygame.draw.circle(screen, (0, 0, 255), (weapon.startX, weapon.startY), weapon.radius)
     
     for enemy in enemies:
+        if enemy.health <= 0:
+            enemies.pop(enemies.index(enemy))
         enemy.move()
+        
         pygame.draw.rect(screen, (0, 255, 0), enemy.rect)
 
     screen.blit(cash_surface, cash_rect)
     pygame.display.flip()
-    tick += 1
-
+    
 
     clock.tick(60)
     
