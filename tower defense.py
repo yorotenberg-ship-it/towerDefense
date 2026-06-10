@@ -1,11 +1,10 @@
 import pygame, sys, os, time, math
-
-#This is a comment for testing if github works!
-
 clock = pygame.time.Clock()
 pygame.display.set_caption("Tower Defense Game")
 pygame.init()
-screen = pygame.display.set_mode((1200, 600))
+screen = pygame.display.set_mode((1219, 814))
+background = pygame.image.load("map.png")
+background = pygame.transform.scale(background, (1219, 814))
 running = True
 BLACK = (0, 0, 0)
 placing = False
@@ -15,7 +14,13 @@ cash = 500
 towersWidth = 50
 towersHeight = 50
 
-x = 200
+wayPoints = [(80, 170), (280, 170), (600, 170), 
+             (740, 230), (800, 450), (743, 550), 
+             (620, 620), (470, 590), (370, 380), 
+             (400, 260), (500, 200), (620, 170), 
+             (750, 250), (800, 370), (770, 500), 
+             (760, 628), (1000, 640)]
+
 
 class Tower:
     def __init__ (Tower, towerX, towerY, width, height, towerType = None, sellerType = False, sellerCost = 0):
@@ -48,6 +53,27 @@ class Enemy:
         Enemy.x = x
         Enemy.y = y
         Enemy.rect = pygame.Rect(x, y, 40, 40)
+        Enemy.wayPointIndex = 0
+
+    def move(Enemy):
+        if Enemy.wayPointIndex >= len(wayPoints):
+            return
+
+        targetX, targetY = wayPoints[Enemy.wayPointIndex]
+        dx = targetX - Enemy.x
+        dy = targetY - Enemy.y
+        dist = math.hypot(dx, dy)
+
+        if dist < Enemy.speed:
+            Enemy.x = targetX
+            Enemy.y = targetY
+            Enemy.wayPointIndex += 1
+        else:
+            Enemy.x += (dx / dist) * Enemy.speed
+            Enemy.y += (dy / dist) * Enemy.speed
+
+        Enemy.rect.x = Enemy.x
+        Enemy.rect.y = Enemy.y
 
 
 closest = None
@@ -69,25 +95,28 @@ while running:
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if placing == False:
-                    for tower in towers:
-                        if tower.rect.collidepoint(mouseX, mouseY):
-                            if tower.type == "seller" and cash - tower.cost >= 0: 
-                                placing = True
-                                towers.append(Tower(mouseX - tower.w  //  2, mouseY - tower.h  //  2, towersWidth, towersHeight, tower.sellerType))
-                                cash -= tower.cost
-                                placingType = tower.sellerType
-                                break
-                elif placing == True: 
-                    temp_tower = Tower(mouseX - towersWidth  //  2, mouseY - towersHeight // 2, towersWidth, towersHeight)
-                    for tower in towers: 
-                        if not tower.rect == temp_tower.rect:
-                            collide = temp_tower.rect.colliderect(tower.rect)
-                            if collide == True: break
+                if event.button == 3:
+                    enemies.append(Enemy(100, "normal", 1, 0, 170))
+                else:
+                    if placing == False:
+                        for tower in towers:
+                            if tower.rect.collidepoint(mouseX, mouseY):
+                                if tower.type == "seller" and cash - tower.cost >= 0: 
+                                    placing = True
+                                    towers.append(Tower(mouseX - tower.w  //  2, mouseY - tower.h  //  2, towersWidth, towersHeight, tower.sellerType))
+                                    cash -= tower.cost
+                                    placingType = tower.sellerType
+                                    break
+                    elif placing == True: 
+                        temp_tower = Tower(mouseX - towersWidth  //  2, mouseY - towersHeight // 2, towersWidth, towersHeight)
+                        for tower in towers: 
+                            if not tower.rect == temp_tower.rect:
+                                collide = temp_tower.rect.colliderect(tower.rect)
+                                if collide == True: break
                             
-                    if collide == False: 
-                        towers.append(Tower(mouseX - towersWidth // 2, mouseY - towersHeight // 2, towersWidth, towersHeight, placingType))
-                        placing = False
+                        if collide == False: 
+                            towers.append(Tower(mouseX - towersWidth // 2, mouseY - towersHeight // 2, towersWidth, towersHeight, placingType))
+                            placing = False
     #print(placing)
     
 
@@ -96,7 +125,7 @@ while running:
     cash_content = f'Cash: {cash}$'
     cash_surface = font.render(cash_content, True, (255, 255, 255))
 
-    screen.fill(BLACK)
+    screen.blit(background, (0, 0))
     for tower in towers:
         if tower.type == "seller":
             if tower.sellerType == "range":
@@ -111,21 +140,14 @@ while running:
             if tower.type == "range":
                 pygame.draw.rect(screen, (255, 0, 0), tower.rect)
                 if tick == 0 and (not tower.rect == towers[-1].rect or placing == False):
-                    if not enemies == []
-                        closest = None
-                        closestDist = 'inf'
-                        for enemy in enemies:
-                            xDiff = abs(tower.x - enemy.x)
-                            yDiff = abs(tower.y - enemy.y)
-                            if math.hypot(xDiff, yDiff) < closestDist:
-                                closest = enemy
-                                closestDist = math.hypot(xDiff, yDiff)
-                        for enemy in enemies:
-                            if enemy == closest:
-                                enemy = Enemy(enemy.health - 50, enemy.type, enemy.speed, enemy.x, enemy.y)
-                                break
-                    
-            
+                    closest = None
+                    closestDist = 'inf'
+                    for enemy in enemies:
+                        xDiff = abs(tower.x - enemy.x)
+                        yDiff = abs(tower.y - enemy.y)
+                        if math.hypot(xDiff, yDiff) < closestDist:
+                            closest = enemy
+                            closestDist = math.hypot(xDiff, yDiff)
                     #weapons.append(Weapon(tower.x + (tower.w - 20) // 2, tower.y + (tower.w - 20) // 2, 0, 0, 50, "range"))
             elif tower.type == "short":
                 pygame.draw.rect(screen, (255, 255, 0), tower.rect)
@@ -138,9 +160,15 @@ while running:
             pygame.draw.rect(screen, (255, 255, 255), weapon.rect)
         elif weapon.type == 'area':
             pygame.draw.circle(screen, (0, 0, 255), (weapon.startX, weapon.startY), weapon.radius)
+    
+    for enemy in enemies:
+        enemy.move()
+        pygame.draw.rect(screen, (0, 255, 0), enemy.rect)
+
     screen.blit(cash_surface, cash_rect)
     pygame.display.flip()
     tick += 1
+
 
     clock.tick(60)
     
