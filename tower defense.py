@@ -2,7 +2,7 @@ import pygame, sys, os, time, math
 clock = pygame.time.Clock()
 pygame.display.set_caption("Tower Defense Game")
 pygame.init()
-screen = pygame.display.set_mode((1, 1))
+screen = pygame.display.set_mode((1219, 814))
 background = pygame.image.load("map.png")
 background = pygame.transform.scale(background, (1219, 814))
 running = True
@@ -171,6 +171,7 @@ while running:
     for enemy in enemies:
         if enemy.health <= 0:
             enemies.pop(enemies.index(enemy))
+            money += 100
         enemy.move()
         
         pygame.draw.rect(screen, (0, 255, 0), enemy.rect)
