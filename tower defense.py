@@ -12,7 +12,9 @@ cash = 500
 health = 100
 towersWidth = 50
 towersHeight = 50
-
+titan = pygame.image.load('graphics/titan.png')
+titan = pygame.transform.scale(titan, (80, 80))
+titan_rect = titan.get_rect(topleft=(0, 0))
 LOOP_CENTER = (600, 405) 
 LOOP_RADIUS = 210  
 
@@ -80,8 +82,8 @@ class Enemy:
             Enemy.x += (dx / dist) * Enemy.speed
             Enemy.y += (dy / dist) * Enemy.speed
 
-        Enemy.rect.x = Enemy.x-20
-        Enemy.rect.y = Enemy.y-20
+        Enemy.rect.x = Enemy.x-40
+        Enemy.rect.y = Enemy.y-40
 
 
 closest = None
@@ -209,12 +211,9 @@ while running:
             enemies.pop(enemies.index(enemy))
             health -= enemy.damage
         
-        pygame.draw.rect(screen, (0, 255, 0), enemy.rect)
+        screen.blit(titan, enemy.rect)
 
     screen.blit(cash_surface, cash_rect)
     screen.blit(health_surface, health_rect)
     pygame.display.flip()
-    
-
     clock.tick(60)
-    
