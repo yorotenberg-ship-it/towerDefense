@@ -12,7 +12,9 @@ collide=False
 cash = 500
 towersWidth = 50
 towersHeight = 50
-
+titan = pygame.image.load('graphics/titan.png')
+titan = pygame.transform.scale(titan, (80, 80))
+titan_rect = titan.get_rect(topleft=(0, 0))
 LOOP_CENTER = (600, 405) 
 LOOP_RADIUS = 210  
 
@@ -78,8 +80,8 @@ class Enemy:
             Enemy.x += (dx / dist) * Enemy.speed
             Enemy.y += (dy / dist) * Enemy.speed
 
-        Enemy.rect.x = Enemy.x-20
-        Enemy.rect.y = Enemy.y-20
+        Enemy.rect.x = Enemy.x-40
+        Enemy.rect.y = Enemy.y-40
 
 
 closest = None
@@ -104,7 +106,7 @@ while running:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
-                    enemies.append(Enemy(1, "normal", 10, 0, 170))
+                    enemies.append(Enemy(1, "normal", 6, 0, 170))
                 else:
                     if placing == False:
                         for tower in towers:
@@ -140,17 +142,16 @@ while running:
     LOOP_OUTER = 265
     LOOP_INNER = 155
 
-# grass background
     pygame.draw.rect(screen, GREEN, (0, 0, 1200, 800))
 
-# entry straight (top left)
+
     pygame.draw.rect(screen, BROWN, (0, 140, 620, PATH_WIDTH))
 
-# the loop ring
+
     pygame.draw.circle(screen, BROWN, LOOP_CENTER, LOOP_OUTER)
     pygame.draw.circle(screen, GREEN, LOOP_CENTER, LOOP_INNER)
 
-# exit straight (bottom right)
+
     pygame.draw.rect(screen, BROWN, (600, 560, 600, PATH_WIDTH))
     for tower in towers:
         if tower.type == "seller":
@@ -180,7 +181,6 @@ while running:
                                 enemy.health -= 5
                                 
 
-                    #weapons.append(Weapon(tower.x + (tower.w - 20) // 2, tower.y + (tower.w - 20) // 2, 0, 0, 50, "range"))
             elif tower.type == "short":
                 pygame.draw.rect(screen, (255, 255, 0), tower.rect)
             elif tower.type == "area":
@@ -198,12 +198,9 @@ while running:
             enemies.pop(enemies.index(enemy))
             cash += 100
         enemy.move()
-        
-        pygame.draw.rect(screen, (0, 255, 0), enemy.rect)
+        screen.blit(titan, enemy.rect)
 
     screen.blit(cash_surface, cash_rect)
     pygame.display.flip()
-    
-
     clock.tick(60)
     
