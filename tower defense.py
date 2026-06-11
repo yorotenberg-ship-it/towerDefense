@@ -126,7 +126,7 @@ while running:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
-                    enemies.append(Enemy(1, "normal", 5, 0, 195, 5))
+                    enemies.append(Enemy(1, "titan", 5, 0, 195, 5))
                 else:
                     if placing == False:
                         for tower in towers:
@@ -210,8 +210,8 @@ while running:
         if enemy.x == 1200 and enemy.y == 620:
             enemies.pop(enemies.index(enemy))
             health -= enemy.damage
-        
-        screen.blit(titan, enemy.rect)
+        if enemy.type == 'titan':
+            screen.blit(titan, enemy.rect)
 
     screen.blit(cash_surface, cash_rect)
     screen.blit(health_surface, health_rect)
