@@ -2,14 +2,14 @@ import pygame, sys, os, time, math
 clock = pygame.time.Clock()
 pygame.display.set_caption("Tower Defense Game")
 pygame.init()
-screen = pygame.display.set_mode((1219, 814))
-background = pygame.image.load("map.png")
-background = pygame.transform.scale(background, (1219, 814))
+screen = pygame.display.set_mode((1200, 800))
 running = True
 placing = False
 down = False
 collide=False
+on_path = False
 cash = 500
+health = 100
 towersWidth = 50
 towersHeight = 50
 
@@ -52,7 +52,7 @@ class Weapon:
             Weapon.rect = (pygame.Rect(startX, startY, 20, 20))
 
 class Enemy:
-    def __init__(Enemy, health, enemyType, speed, x, y):
+    def __init__(Enemy, health, enemyType, speed, x, y, damage):
         Enemy.health = health
         Enemy.type = enemyType
         Enemy.speed = speed
@@ -60,6 +60,8 @@ class Enemy:
         Enemy.y = y
         Enemy.rect = pygame.Rect(x, y, 40, 40)
         Enemy.wayPointIndex = 0
+        Enemy.damage = damage
+
 
     def move(Enemy):
         if Enemy.wayPointIndex >= len(wayPoints):
@@ -91,20 +93,38 @@ font = pygame.font.Font(None, 36)
 cash_content = f'Cash: {cash}$'
 cash_surface = font.render(cash_content, True, (255, 255, 255))
 cash_rect = cash_surface.get_rect(topleft=(1060, 10))
+
+health_content = f'health: {health}$'
+health_surface = font.render(health_content, True, (255, 255, 255))
+health_rect = health_surface.get_rect(topleft=(1060, 50))
 placingType = None
 
 tick=0
 while running:
-
     tick += 1
     tick = tick % 60
     mouseX, mouseY = pygame.mouse.get_pos()
+
+    GREEN = (82, 130, 37)
+    BROWN = (180, 130, 20)
+
+    PATH_WIDTH = 110
+    LOOP_CENTER = (600, 405)
+    LOOP_OUTER = 265
+    LOOP_INNER = 155
+
+    pygame.draw.rect(screen, GREEN, (0, 0, 1200, 800))
+    pygame.draw.rect(screen, BROWN, (0, 140, 620, PATH_WIDTH))
+    pygame.draw.circle(screen, BROWN, LOOP_CENTER, LOOP_OUTER)
+    pygame.draw.circle(screen, GREEN, LOOP_CENTER, LOOP_INNER)
+    pygame.draw.rect(screen, BROWN, (600, 560, 600, PATH_WIDTH))
+
     for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
-                    enemies.append(Enemy(1, "normal", 10, 0, 170))
+                    enemies.append(Enemy(1, "normal", 5, 0, 195, 5))
                 else:
                     if placing == False:
                         for tower in towers:
@@ -116,42 +136,31 @@ while running:
                                     placingType = tower.sellerType
                                     break
                     elif placing == True: 
-                        temp_tower = Tower(mouseX - towersWidth  //  2, mouseY - towersHeight // 2, towersWidth, towersHeight)
-                        for tower in towers: 
+                        temp_tower = Tower(mouseX - towersWidth // 2, mouseY - towersHeight // 2, towersWidth, towersHeight)
+                        collide = False
+                        on_path = False
+                        for tower in towers:
                             if not tower.rect == temp_tower.rect:
-                                collide = temp_tower.rect.colliderect(tower.rect)
-                                if collide == True: break
-                            
-                        if collide == False: 
-                            
+                                if temp_tower.rect.colliderect(tower.rect):
+                                    collide = True
+                                    break
+                        corners = [(temp_tower.rect.left, temp_tower.rect.top),(temp_tower.rect.right, temp_tower.rect.top),(temp_tower.rect.left, temp_tower.rect.bottom),(temp_tower.rect.right, temp_tower.rect.bottom)]
+                        on_path = any(screen.get_at(corner)[:3] == BROWN for corner in corners)
+                        if collide == False and on_path == False:
+                            towers.append(Tower(mouseX - towersWidth // 2, mouseY - towersHeight // 2, towersWidth, towersHeight, placingType))
                             placing = False
-    #print(placing)
+                            
+
     
 
     if placing == True:
         towers[-1] = Tower(mouseX- towersWidth // 2, mouseY - towersHeight // 2, towersWidth, towersHeight, placingType)
     cash_content = f'Cash: {cash}$'
     cash_surface = font.render(cash_content, True, (255, 255, 255))
+    health_content = f'Health: {health}'
+    health_surface = font.render(health_content, True, (255, 255, 255))
 
-    GREEN = (82, 130, 37)
-    BROWN = (180, 130, 20)
-    PATH_WIDTH = 110
-    LOOP_CENTER = (600, 405)
-    LOOP_OUTER = 265
-    LOOP_INNER = 155
 
-# grass background
-    pygame.draw.rect(screen, GREEN, (0, 0, 1200, 800))
-
-# entry straight (top left)
-    pygame.draw.rect(screen, BROWN, (0, 140, 620, PATH_WIDTH))
-
-# the loop ring
-    pygame.draw.circle(screen, BROWN, LOOP_CENTER, LOOP_OUTER)
-    pygame.draw.circle(screen, GREEN, LOOP_CENTER, LOOP_INNER)
-
-# exit straight (bottom right)
-    pygame.draw.rect(screen, BROWN, (600, 560, 600, PATH_WIDTH))
     for tower in towers:
         if tower.type == "seller":
             if tower.sellerType == "range":
@@ -178,9 +187,6 @@ while running:
                     for enemy in enemies:
                             if enemy == closest:
                                 enemy.health -= 5
-                                
-
-                    #weapons.append(Weapon(tower.x + (tower.w - 20) // 2, tower.y + (tower.w - 20) // 2, 0, 0, 50, "range"))
             elif tower.type == "short":
                 pygame.draw.rect(screen, (255, 255, 0), tower.rect)
             elif tower.type == "area":
@@ -198,10 +204,15 @@ while running:
             enemies.pop(enemies.index(enemy))
             cash += 100
         enemy.move()
+
+        if enemy.x == 1200 and enemy.y == 620:
+            enemies.pop(enemies.index(enemy))
+            health -= enemy.damage
         
         pygame.draw.rect(screen, (0, 255, 0), enemy.rect)
 
     screen.blit(cash_surface, cash_rect)
+    screen.blit(health_surface, health_rect)
     pygame.display.flip()
     
 
