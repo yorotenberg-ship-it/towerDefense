@@ -127,8 +127,7 @@ while running:
                         if collide == False: 
                             
                             placing = False
-    #print(placing)
-    
+
 
     if placing == True:
         towers[-1] = Tower(mouseX- towersWidth // 2, mouseY - towersHeight // 2, towersWidth, towersHeight, placingType)
