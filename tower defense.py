@@ -14,7 +14,12 @@ towersWidth = 50
 towersHeight = 50
 titan = pygame.image.load('graphics/titan.png')
 titan = pygame.transform.scale(titan, (80, 80))
-titan_rect = titan.get_rect(topleft=(0, 0))
+bonerDragon = pygame.image.load('graphics/bonerDragon.png')
+bonerDragon = pygame.transform.scale(bonerDragon, (80, 80))
+skeleton = pygame.image.load('graphics/skeleton.png')
+skeleton = pygame.transform.scale(skeleton, (80, 80))
+necromancer = pygame.image.load('graphics/necromancer.png')
+necromancer = pygame.transform.scale(necromancer, (80, 80))
 LOOP_CENTER = (600, 405) 
 LOOP_RADIUS = 210  
 
@@ -212,6 +217,12 @@ while running:
             health -= enemy.damage
         if enemy.type == 'titan':
             screen.blit(titan, enemy.rect)
+        elif enemy.type == 'bonerDragon':
+            screen.blit(bonerDragon, enemy.rect)
+        elif enemy.type == 'skeleton':
+            screen.blit(skeleton, enemy.rect)
+        elif enemy.type == 'necromancer':
+            screen.blit(necromancer, enemy.rect)
 
     screen.blit(cash_surface, cash_rect)
     screen.blit(health_surface, health_rect)
