@@ -6,7 +6,6 @@ screen = pygame.display.set_mode((1219, 814))
 background = pygame.image.load("map.png")
 background = pygame.transform.scale(background, (1219, 814))
 running = True
-BLACK = (0, 0, 0)
 placing = False
 down = False
 collide=False
@@ -14,12 +13,19 @@ cash = 500
 towersWidth = 50
 towersHeight = 50
 
-wayPoints = [(80, 170), (280, 170), (600, 170), 
-             (740, 230), (800, 450), (743, 550), 
-             (620, 620), (470, 590), (370, 380), 
-             (400, 260), (500, 200), (620, 170), 
-             (750, 250), (800, 370), (770, 500), 
-             (760, 628), (1000, 640)]
+LOOP_CENTER = (600, 405) 
+LOOP_RADIUS = 210  
+
+loop_points = []
+for i in range(100):
+    angle = math.radians(-90 + i * 5.1)
+
+    x = LOOP_CENTER[0] + math.cos(angle) * LOOP_RADIUS
+    y = LOOP_CENTER[1] + math.sin(angle) * LOOP_RADIUS
+
+    loop_points.append((x, y))
+
+wayPoints = ([(0, 195), (400, 195)] + loop_points + [(800, 620), (1200, 620)])
 
 
 class Tower:
@@ -72,8 +78,8 @@ class Enemy:
             Enemy.x += (dx / dist) * Enemy.speed
             Enemy.y += (dy / dist) * Enemy.speed
 
-        Enemy.rect.x = Enemy.x
-        Enemy.rect.y = Enemy.y
+        Enemy.rect.x = Enemy.x-20
+        Enemy.rect.y = Enemy.y-20
 
 
 closest = None
@@ -89,6 +95,7 @@ placingType = None
 
 tick=0
 while running:
+
     tick += 1
     tick = tick % 60
     mouseX, mouseY = pygame.mouse.get_pos()
@@ -97,7 +104,7 @@ while running:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
-                    enemies.append(Enemy(1, "normal", 3, 0, 170))
+                    enemies.append(Enemy(1, "normal", 20, 0, 170))
                 else:
                     if placing == False:
                         for tower in towers:
@@ -126,7 +133,25 @@ while running:
     cash_content = f'Cash: {cash}$'
     cash_surface = font.render(cash_content, True, (255, 255, 255))
 
-    screen.blit(background, (0, 0))
+    GREEN = (82, 130, 37)
+    BROWN = (180, 130, 20)
+    PATH_WIDTH = 110
+    LOOP_CENTER = (600, 405)
+    LOOP_OUTER = 265
+    LOOP_INNER = 155
+
+# grass background
+    pygame.draw.rect(screen, GREEN, (0, 0, 1200, 800))
+
+# entry straight (top left)
+    pygame.draw.rect(screen, BROWN, (0, 140, 620, PATH_WIDTH))
+
+# the loop ring
+    pygame.draw.circle(screen, BROWN, LOOP_CENTER, LOOP_OUTER)
+    pygame.draw.circle(screen, GREEN, LOOP_CENTER, LOOP_INNER)
+
+# exit straight (bottom right)
+    pygame.draw.rect(screen, BROWN, (600, 560, 600, PATH_WIDTH))
     for tower in towers:
         if tower.type == "seller":
             if tower.sellerType == "range":
@@ -171,6 +196,7 @@ while running:
     for enemy in enemies:
         if enemy.health <= 0:
             enemies.pop(enemies.index(enemy))
+            money += 100
         enemy.move()
         
         pygame.draw.rect(screen, (0, 255, 0), enemy.rect)
