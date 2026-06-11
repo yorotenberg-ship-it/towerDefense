@@ -104,7 +104,7 @@ while running:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
-                    enemies.append(Enemy(1, "normal", 20, 0, 170))
+                    enemies.append(Enemy(1, "normal", 10, 0, 170))
                 else:
                     if placing == False:
                         for tower in towers:
@@ -196,7 +196,7 @@ while running:
     for enemy in enemies:
         if enemy.health <= 0:
             enemies.pop(enemies.index(enemy))
-            money += 100
+            cash += 100
         enemy.move()
         
         pygame.draw.rect(screen, (0, 255, 0), enemy.rect)
