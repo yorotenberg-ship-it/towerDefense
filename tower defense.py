@@ -2,7 +2,7 @@ import pygame, sys, os, time, math
 clock = pygame.time.Clock()
 pygame.display.set_caption("Tower Defense Game")
 pygame.init()
-screen = pygame.display.set_mode((1200, 800))
+screen = pygame.display.set_mode((1400, 800))
 running = True
 placing = False
 down = False
@@ -30,6 +30,13 @@ knight = pygame.image.load('graphics/knight.png')
 knight = pygame.transform.scale(knight, (towersWidth, towersHeight))
 LOOP_CENTER = (600, 405) 
 LOOP_RADIUS = 210  
+
+enemyClasses = [
+    ['normal', 5, 5 ,1],
+    ['fast', 10, 15, 2],
+    ['fat', 40, 3, 3],
+    ['fat and fast', 40, 15, 5]
+    ]
 
 loop_points = []
 for i in range(100):
@@ -101,7 +108,7 @@ class Enemy:
 
 closest = None
 closestDist = 'inf'
-towers = [Tower(100, 350, towersWidth, towersHeight, "seller", "range", 200), Tower(100, 425, towersWidth, towersHeight, "seller", "short", 100), Tower(100, 500, towersWidth, towersHeight ,"seller", "area", 50)]
+towers = [Tower(1250, 350, towersWidth, towersHeight, "seller", "range", 200), Tower(1250, 425, towersWidth, towersHeight, "seller", "short", 100), Tower(1250, 500, towersWidth, towersHeight ,"seller", "area", 50)]
 weapons = []
 enemies = []
 font = pygame.font.Font(None, 36)
@@ -122,6 +129,7 @@ while running:
 
     GREEN = (82, 130, 37)
     BROWN = (180, 130, 20)
+    GREY = (128, 128, 128)
 
     PATH_WIDTH = 110
     LOOP_CENTER = (600, 405)
@@ -133,6 +141,7 @@ while running:
     pygame.draw.circle(screen, BROWN, LOOP_CENTER, LOOP_OUTER)
     pygame.draw.circle(screen, GREEN, LOOP_CENTER, LOOP_INNER)
     pygame.draw.rect(screen, BROWN, (600, 560, 600, PATH_WIDTH))
+    pygame.draw.rect(screen, GREY, (1200, 0, 200, 800))
 
     for event in pygame.event.get():
             if event.type == pygame.QUIT or health <= 0:
@@ -159,7 +168,7 @@ while running:
                                 if temp_tower.rect.colliderect(tower.rect):
                                     collide = True
                                     break
-                        corners = [(temp_tower.rect.left, temp_tower.rect.top),(temp_tower.rect.right, temp_tower.rect.top),(temp_tower.rect.left, temp_tower.rect.bottom),(temp_tower.rect.right, temp_tower.rect.bottom)]
+                        corners = [(temp_tower.rect.left+20, temp_tower.rect.top+20),(temp_tower.rect.right-20, temp_tower.rect.top+20),(temp_tower.rect.left+20, temp_tower.rect.bottom-20),(temp_tower.rect.right-20, temp_tower.rect.bottom-20)]
                         on_path = any(screen.get_at(corner)[:3] == BROWN for corner in corners)
                         if collide == False and on_path == False:
                             placing = False
