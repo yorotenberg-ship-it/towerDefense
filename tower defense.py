@@ -135,7 +135,7 @@ while running:
     pygame.draw.rect(screen, BROWN, (600, 560, 600, PATH_WIDTH))
 
     for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT or health <= 0:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
@@ -181,15 +181,12 @@ while running:
                 screen.blit(archer, tower.rect)
             elif tower.sellerType == "short":
                 screen.blit(knight, tower.rect)
-                #pygame.draw.rect(screen, (255, 255, 0), tower.rect)
             elif tower.sellerType == "seller":
                 pygame.draw.rect(screen, (0, 255, 255), tower.rect)
             elif tower.sellerType == "area":
                 screen.blit(dragon, tower.rect)
-                #pygame.draw.rect(screen, (255, 255, 255), tower.rect)
         else: 
             if tower.type == "range":
-                #pygame.draw.rect(screen, (255, 0, 0), tower.rect)
                 screen.blit(archer, tower.rect)
                 if tick == 30 and (not tower.rect == towers[-1].rect or placing == False):
                     closest = None
@@ -207,10 +204,8 @@ while running:
                                 break
             elif tower.type == "short":
                 screen.blit(knight, tower.rect)
-                #pygame.draw.rect(screen, (255, 255, 0), tower.rect)
             elif tower.type == "area":
                 screen.blit(dragon, tower.rect)
-                #pygame.draw.rect(screen, (255, 255, 255), tower.rect)
                 if not tower.rect == towers[-1].rect or placing == False:
                     weapons.append(Weapon(tower.x + tower.w // 2, tower.y + tower.h // 2, 0, 0, 20, "area", 2))
     for weapon in weapons:
