@@ -236,7 +236,6 @@ while running:
             screen.blit(skeleton, enemy.rect)
         elif enemy.type == 'necromancer':
             screen.blit(necromancer, enemy.rect)
-    print(len(towers))
     screen.blit(cash_surface, cash_rect)
     screen.blit(health_surface, health_rect)
     pygame.display.flip()
