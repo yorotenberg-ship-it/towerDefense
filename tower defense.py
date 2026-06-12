@@ -171,7 +171,6 @@ while running:
                         corners = [(temp_tower.rect.left+20, temp_tower.rect.top+20),(temp_tower.rect.right-20, temp_tower.rect.top+20),(temp_tower.rect.left+20, temp_tower.rect.bottom-20),(temp_tower.rect.right-20, temp_tower.rect.bottom-20)]
                         on_path = any(screen.get_at(corner)[:3] == BROWN for corner in corners)
                         if collide == False and on_path == False:
-                            towers.append(Tower(mouseX - towersWidth // 2, mouseY - towersHeight // 2, towersWidth, towersHeight, placingType))
                             placing = False
                             
 
@@ -207,13 +206,14 @@ while running:
                     for enemy in enemies:
                         xDiff = abs(tower.x - enemy.x)
                         yDiff = abs(tower.y - enemy.y)
-                        if math.hypot(xDiff, yDiff) < closestDist:
+                        if math.hypot(xDiff, yDiff) < closestDist and not enemy.health <= 0:
                             closest = enemy
                             closestDist = math.hypot(xDiff, yDiff)
                     
                     for enemy in enemies:
-                            if enemy == closest:
+                            if enemy == closest and not enemy.health <= 0:
                                 enemy.health -= 5
+                                break
             elif tower.type == "short":
                 screen.blit(knight, tower.rect)
                 #pygame.draw.rect(screen, (255, 255, 0), tower.rect)
@@ -245,7 +245,6 @@ while running:
             screen.blit(skeleton, enemy.rect)
         elif enemy.type == 'necromancer':
             screen.blit(necromancer, enemy.rect)
-
     screen.blit(cash_surface, cash_rect)
     screen.blit(health_surface, health_rect)
     pygame.display.flip()
