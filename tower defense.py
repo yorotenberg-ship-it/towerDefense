@@ -10,8 +10,8 @@ collide=False
 on_path = False
 cash = 500
 health = 100
-towersWidth = 50
-towersHeight = 50
+towersWidth = 80
+towersHeight = 80
 titan = pygame.image.load('graphics/titan.png')
 titan = pygame.transform.scale(titan, (80, 80))
 bonerDragon = pygame.image.load('graphics/bonerDragon.png')
@@ -20,6 +20,14 @@ skeleton = pygame.image.load('graphics/skeleton.png')
 skeleton = pygame.transform.scale(skeleton, (80, 80))
 necromancer = pygame.image.load('graphics/necromancer.png')
 necromancer = pygame.transform.scale(necromancer, (80, 80))
+wizard = pygame.image.load('graphics/wizard.png')
+wizard = pygame.transform.scale(wizard, (towersWidth, towersHeight))
+dragon = pygame.image.load('graphics/dragon.png')
+dragon = pygame.transform.scale(dragon, (towersWidth, towersHeight))
+archer = pygame.image.load('graphics/archer.png')
+archer = pygame.transform.scale(archer, (towersWidth, towersHeight))
+knight = pygame.image.load('graphics/knight.png')
+knight = pygame.transform.scale(knight, (towersWidth, towersHeight))
 LOOP_CENTER = (600, 405) 
 LOOP_RADIUS = 210  
 
@@ -93,7 +101,7 @@ class Enemy:
 
 closest = None
 closestDist = 'inf'
-towers = [Tower(100, 100, towersWidth, towersHeight, "seller", "range", 200), Tower(100, 250, towersWidth, towersHeight, "seller", "short", 100), Tower(100, 400, towersWidth, towersHeight ,"seller", "area", 50)]
+towers = [Tower(100, 350, towersWidth, towersHeight, "seller", "range", 200), Tower(100, 425, towersWidth, towersHeight, "seller", "short", 100), Tower(100, 500, towersWidth, towersHeight ,"seller", "area", 50)]
 weapons = []
 enemies = []
 font = pygame.font.Font(None, 36)
@@ -171,16 +179,19 @@ while running:
     for tower in towers:
         if tower.type == "seller":
             if tower.sellerType == "range":
-                pygame.draw.rect(screen, (255, 0, 0), tower.rect)
+                screen.blit(archer, tower.rect)
             elif tower.sellerType == "short":
-                pygame.draw.rect(screen, (255, 255, 0), tower.rect)
+                screen.blit(knight, tower.rect)
+                #pygame.draw.rect(screen, (255, 255, 0), tower.rect)
             elif tower.sellerType == "seller":
                 pygame.draw.rect(screen, (0, 255, 255), tower.rect)
             elif tower.sellerType == "area":
-                pygame.draw.rect(screen, (255, 255, 255), tower.rect)
+                screen.blit(dragon, tower.rect)
+                #pygame.draw.rect(screen, (255, 255, 255), tower.rect)
         else: 
             if tower.type == "range":
-                pygame.draw.rect(screen, (255, 0, 0), tower.rect)
+                #pygame.draw.rect(screen, (255, 0, 0), tower.rect)
+                screen.blit(archer, tower.rect)
                 if tick == 30 and (not tower.rect == towers[-1].rect or placing == False):
                     closest = None
                     closestDist = 9999999999999
@@ -195,9 +206,11 @@ while running:
                             if enemy == closest:
                                 enemy.health -= 5
             elif tower.type == "short":
-                pygame.draw.rect(screen, (255, 255, 0), tower.rect)
+                screen.blit(knight, tower.rect)
+                #pygame.draw.rect(screen, (255, 255, 0), tower.rect)
             elif tower.type == "area":
-                pygame.draw.rect(screen, (255, 255, 255), tower.rect)
+                screen.blit(dragon, tower.rect)
+                #pygame.draw.rect(screen, (255, 255, 255), tower.rect)
                 if not tower.rect == towers[-1].rect or placing == False:
                     weapons.append(Weapon(tower.x + tower.w // 2, tower.y + tower.h // 2, 0, 0, 20, "area", 2))
     for weapon in weapons:
