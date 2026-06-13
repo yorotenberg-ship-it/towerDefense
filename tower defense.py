@@ -19,7 +19,7 @@ bonerDragon = pygame.transform.scale(bonerDragon, (80, 80))
 skeleton = pygame.image.load('graphics/skeleton.png')
 skeleton = pygame.transform.scale(skeleton, (80, 80))
 necromancer = pygame.image.load('graphics/necromancer.png')
-necromancer = pygame.transform.scale(necromancer, (80, 80))
+necromancer = pygame.transform.scale(necromancer, (110, 80))
 wizard = pygame.image.load('graphics/wizard.png')
 wizard = pygame.transform.scale(wizard, (towersWidth, towersHeight))
 dragon = pygame.image.load('graphics/dragon.png')
@@ -119,18 +119,17 @@ enemyQueue = []
 spawnTimer = 0
 
 wave1 = [
-    ['titan', 5],
-    ['skeleton', 1]
+    ['titan', 5]
     ]
 wave2 = [['titan', 10]]
-wave3 = []
-wave4 = []
-wave5 = []
-wave6 = []
-wave7 = []
-wave8 = []
-wave9 = []
-wave10 = []
+wave3 = [['titan', 5], ['skeleton', 3]]
+wave4 = [['skeleton', 3], ['titan', 5], ['skeleton', 3]]
+wave5 = [['titan', 20]]
+wave6 = [['skeleton',5], ['bonerDragon', 1]]
+wave7 = [['bonerDragon', 3]]
+wave8 = [['titan', 10], ['skeleton', 5], ['bonerDragon', 2]]
+wave9 = [['necromancer', 1]]
+wave10 = [['bonerDragon', 3], ['necromancer', 1]]
 
 waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave10]
 
@@ -139,16 +138,16 @@ def waveStart(wave):
     for enemy in wave:
         if enemy[0] == 'titan':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(1, "titan", 5, 0, 195, 5))
+                enemyQueue.append(Enemy(5, "titan", 3, 0, 195, 1))
         elif enemy[0] == 'skeleton':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(1, "skeleton", 3, 0, 195, 2))
+                enemyQueue.append(Enemy(10, "skeleton", 7, 0, 195, 2))
         elif enemy[0] == 'bonerDragon':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(1, "bonerDragon", 4, 0, 195, 3))
+                enemyQueue.append(Enemy(40, "bonerDragon", 12, 0, 195, 3))
         elif enemy[0] == 'necromancer':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(1, "necromancer", 2, 0, 195, 4))
+                enemyQueue.append(Enemy(85, "necromancer", 3, 0, 195, 4))
 
 
 tick=0
@@ -267,7 +266,7 @@ while running:
     for enemy in enemies:
         if enemy.health <= 0:
             enemies.pop(enemies.index(enemy))
-            cash += 100
+            cash += 15
         enemy.move()
 
         if enemy.x == 1200 and enemy.y == 620:
