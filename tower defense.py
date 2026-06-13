@@ -31,12 +31,7 @@ knight = pygame.transform.scale(knight, (towersWidth, towersHeight))
 LOOP_CENTER = (600, 405) 
 LOOP_RADIUS = 210  
 
-enemyClasses = [
-    ['normal', 5, 5 ,1],
-    ['fast', 10, 15, 2],
-    ['fat', 40, 3, 3],
-    ['fat and fast', 40, 15, 5]
-    ]
+
 
 loop_points = []
 for i in range(100):
@@ -48,7 +43,6 @@ for i in range(100):
     loop_points.append((x, y))
 
 wayPoints = ([(0, 195), (400, 195)] + loop_points + [(800, 620), (1200, 620)])
-
 
 class Tower:
     def __init__ (Tower, towerX, towerY, width, height, towerType = None, sellerType = False, sellerCost = 0):
@@ -121,6 +115,42 @@ health_surface = font.render(health_content, True, (255, 255, 255))
 health_rect = health_surface.get_rect(topleft=(1060, 50))
 placingType = None
 
+enemyQueue = []
+spawnTimer = 0
+
+wave1 = [
+    ['titan', 5],
+    ['skeleton', 1]
+    ]
+wave2 = [['titan', 10]]
+wave3 = []
+wave4 = []
+wave5 = []
+wave6 = []
+wave7 = []
+wave8 = []
+wave9 = []
+wave10 = []
+
+waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave10]
+
+
+def waveStart(wave):
+    for enemy in wave:
+        if enemy[0] == 'titan':
+            for x in range(enemy[1]):
+                enemyQueue.append(Enemy(1, "titan", 5, 0, 195, 5))
+        elif enemy[0] == 'skeleton':
+            for x in range(enemy[1]):
+                enemyQueue.append(Enemy(1, "skeleton", 3, 0, 195, 2))
+        elif enemy[0] == 'bonerDragon':
+            for x in range(enemy[1]):
+                enemyQueue.append(Enemy(1, "bonerDragon", 4, 0, 195, 3))
+        elif enemy[0] == 'necromancer':
+            for x in range(enemy[1]):
+                enemyQueue.append(Enemy(1, "necromancer", 2, 0, 195, 4))
+
+
 tick=0
 while running:
     tick += 1
@@ -149,6 +179,8 @@ while running:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
                     enemies.append(Enemy(1, "titan", 5, 0, 195, 5))
+                elif event.button == 2:
+                    waveStart(waveQueue.pop(0))
                 else:
                     if placing == False:
                         for tower in towers:
@@ -174,7 +206,11 @@ while running:
                             placing = False
                             
 
-    
+    if len(enemyQueue) > 0:
+        spawnTimer += 1
+    if spawnTimer >= 30:
+        enemies.append(enemyQueue.pop(0))
+        spawnTimer = 0
 
     if placing == True:
         towers[-1] = Tower(mouseX- towersWidth // 2, mouseY - towersHeight // 2, towersWidth, towersHeight, placingType)
