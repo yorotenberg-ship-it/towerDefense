@@ -15,6 +15,8 @@ if True:
     skeleton = pygame.transform.scale(skeleton, (80, 80))
     necromancer = pygame.image.load('graphics/necromancer.png')
     necromancer = pygame.transform.scale(necromancer, (110, 80))
+    skeletonKing = pygame.image.load('graphics/skeletonKing.png')
+    skeletonKing = pygame.transform.scale(skeletonKing, (80, 80))
     wizard = pygame.image.load('graphics/wizard.png')
     wizard = pygame.transform.scale(wizard, (towersWidth, towersHeight))
     dragon = pygame.image.load('graphics/dragon.png')
@@ -109,7 +111,7 @@ health_rect = health_surface.get_rect(topleft=(1060, 50))
 
 spawnTimer = 0
 
-wave1 = [['titan', 5, 20]]
+wave1 = [['titan', 5, 0], ['skeletonKing', 5, 0]]
 wave2 = [['titan', 10, 0]]
 wave3 = [['titan', 5, 0], ['skeleton', 3, 0]]
 wave4 = [['skeleton', 3, 0], ['titan', 5, 0], ['skeleton', 3, 0]]
@@ -139,6 +141,9 @@ def waveStart(wave):
         elif enemy[0] == 'necromancer':
             for x in range(enemy[1]):
                 enemyQueue.append(Enemy(200, "necromancer", 3, 0, 195, 200, enemy[2]))
+        elif enemy[0] == 'skeletonKing':
+            for x in range(enemy[1]):
+                enemyQueue.append(Enemy(500, "skeletonKing", 3, 0, 195, 500, enemy[2]))
         elif enemy[0] == 'air':
             for x in range(enemy[1]):
                 enemyQueue.append("air")
@@ -301,6 +306,8 @@ while running:
             screen.blit(skeleton, enemy.rect)
         elif enemy.type == 'necromancer':
             screen.blit(necromancer, enemy.rect)
+        elif enemy.type == 'skeletonKing':
+            screen.blit(skeletonKing, enemy.rect)
     if health <= 0:
         running = False
     screen.blit(cash_surface, cash_rect)
