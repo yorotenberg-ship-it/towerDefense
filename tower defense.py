@@ -19,7 +19,7 @@ bonerDragon = pygame.transform.scale(bonerDragon, (80, 80))
 skeleton = pygame.image.load('graphics/skeleton.png')
 skeleton = pygame.transform.scale(skeleton, (80, 80))
 necromancer = pygame.image.load('graphics/necromancer.png')
-necromancer = pygame.transform.scale(necromancer, (80, 80))
+necromancer = pygame.transform.scale(necromancer, (110, 80))
 wizard = pygame.image.load('graphics/wizard.png')
 wizard = pygame.transform.scale(wizard, (towersWidth, towersHeight))
 dragon = pygame.image.load('graphics/dragon.png')
@@ -31,12 +31,7 @@ knight = pygame.transform.scale(knight, (towersWidth, towersHeight))
 LOOP_CENTER = (600, 405) 
 LOOP_RADIUS = 210  
 
-enemyClasses = [
-    ['normal', 5, 5 ,1],
-    ['fast', 10, 15, 2],
-    ['fat', 40, 3, 3],
-    ['fat and fast', 40, 15, 5]
-    ]
+
 
 loop_points = []
 for i in range(100):
@@ -48,7 +43,6 @@ for i in range(100):
     loop_points.append((x, y))
 
 wayPoints = ([(0, 195), (400, 195)] + loop_points + [(800, 620), (1200, 620)])
-
 
 class Tower:
     def __init__ (Tower, towerX, towerY, width, height, towerType = None, sellerType = False, sellerCost = 0):
@@ -121,6 +115,41 @@ health_surface = font.render(health_content, True, (255, 255, 255))
 health_rect = health_surface.get_rect(topleft=(1060, 50))
 placingType = None
 
+enemyQueue = []
+spawnTimer = 0
+
+wave1 = [
+    ['titan', 5]
+    ]
+wave2 = [['titan', 10]]
+wave3 = [['titan', 5], ['skeleton', 3]]
+wave4 = [['skeleton', 3], ['titan', 5], ['skeleton', 3]]
+wave5 = [['titan', 20]]
+wave6 = [['skeleton',5], ['bonerDragon', 1]]
+wave7 = [['bonerDragon', 3]]
+wave8 = [['titan', 10], ['skeleton', 5], ['bonerDragon', 2]]
+wave9 = [['necromancer', 1]]
+wave10 = [['bonerDragon', 3], ['necromancer', 1]]
+
+waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave10]
+
+
+def waveStart(wave):
+    for enemy in wave:
+        if enemy[0] == 'titan':
+            for x in range(enemy[1]):
+                enemyQueue.append(Enemy(5, "titan", 3, 0, 195, 1))
+        elif enemy[0] == 'skeleton':
+            for x in range(enemy[1]):
+                enemyQueue.append(Enemy(10, "skeleton", 7, 0, 195, 2))
+        elif enemy[0] == 'bonerDragon':
+            for x in range(enemy[1]):
+                enemyQueue.append(Enemy(40, "bonerDragon", 12, 0, 195, 3))
+        elif enemy[0] == 'necromancer':
+            for x in range(enemy[1]):
+                enemyQueue.append(Enemy(85, "necromancer", 3, 0, 195, 4))
+
+
 tick=0
 while running:
     tick += 1
@@ -149,6 +178,8 @@ while running:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
                     enemies.append(Enemy(1, "titan", 5, 0, 195, 5))
+                elif event.button == 2:
+                    waveStart(waveQueue.pop(0))
                 else:
                     if placing == False:
                         for tower in towers:
@@ -174,7 +205,11 @@ while running:
                             placing = False
                             
 
-    
+    if len(enemyQueue) > 0:
+        spawnTimer += 1
+    if spawnTimer >= 30:
+        enemies.append(enemyQueue.pop(0))
+        spawnTimer = 0
 
     if placing == True:
         towers[-1] = Tower(mouseX- towersWidth // 2, mouseY - towersHeight // 2, towersWidth, towersHeight, placingType)
@@ -226,7 +261,7 @@ while running:
     for enemy in enemies:
         if enemy.health <= 0:
             enemies.pop(enemies.index(enemy))
-            cash += 100
+            cash += 15
         enemy.move()
 
         if enemy.x == 1200 and enemy.y == 620:
