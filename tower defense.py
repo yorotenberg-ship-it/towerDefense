@@ -12,22 +12,23 @@ cash = 500
 health = 100
 towersWidth = 80
 towersHeight = 80
-titan = pygame.image.load('graphics/titan.png')
-titan = pygame.transform.scale(titan, (80, 80))
-bonerDragon = pygame.image.load('graphics/bonerDragon.png')
-bonerDragon = pygame.transform.scale(bonerDragon, (80, 80))
-skeleton = pygame.image.load('graphics/skeleton.png')
-skeleton = pygame.transform.scale(skeleton, (80, 80))
-necromancer = pygame.image.load('graphics/necromancer.png')
-necromancer = pygame.transform.scale(necromancer, (110, 80))
-wizard = pygame.image.load('graphics/wizard.png')
-wizard = pygame.transform.scale(wizard, (towersWidth, towersHeight))
-dragon = pygame.image.load('graphics/dragon.png')
-dragon = pygame.transform.scale(dragon, (towersWidth, towersHeight))
-archer = pygame.image.load('graphics/archer.png')
-archer = pygame.transform.scale(archer, (towersWidth, towersHeight))
-knight = pygame.image.load('graphics/knight.png')
-knight = pygame.transform.scale(knight, (towersWidth, towersHeight))
+if True:
+    titan = pygame.image.load('graphics/titan.png')
+    titan = pygame.transform.scale(titan, (80, 80))
+    bonerDragon = pygame.image.load('graphics/bonerDragon.png')
+    bonerDragon = pygame.transform.scale(bonerDragon, (80, 80))
+    skeleton = pygame.image.load('graphics/skeleton.png')
+    skeleton = pygame.transform.scale(skeleton, (80, 80))
+    necromancer = pygame.image.load('graphics/necromancer.png')
+    necromancer = pygame.transform.scale(necromancer, (110, 80))
+    wizard = pygame.image.load('graphics/wizard.png')
+    wizard = pygame.transform.scale(wizard, (towersWidth, towersHeight))
+    dragon = pygame.image.load('graphics/dragon.png')
+    dragon = pygame.transform.scale(dragon, (towersWidth, towersHeight))
+    archer = pygame.image.load('graphics/archer.png')
+    archer = pygame.transform.scale(archer, (towersWidth, towersHeight))
+    knight = pygame.image.load('graphics/knight.png')
+    knight = pygame.transform.scale(knight, (towersWidth, towersHeight))
 LOOP_CENTER = (600, 405) 
 LOOP_RADIUS = 210  
 
@@ -134,6 +135,7 @@ waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave
 
 waves = len(waveQueue)
 def waveStart(wave):
+    global cash, enemies, enemyQueue
     for enemy in wave:
         if enemy[0] == 'titan':
             for x in range(enemy[1]):
@@ -149,6 +151,7 @@ def waveStart(wave):
                 enemyQueue.append(Enemy(85, "necromancer", 3, 0, 195, 85))
 
 
+round_ended = False
 tick = 0
 while running:
     tick += 1
@@ -206,10 +209,14 @@ while running:
 
     if len(enemyQueue) > 0:
         spawnTimer += 1
-    if spawnTimer >= 30:
+    if spawnTimer >= 30 and not enemyQueue == []:
         enemies.append(enemyQueue.pop(0))
         spawnTimer = 0
-
+        if enemyQueue == []:
+            round_ended = True
+    if enemies == [] and round_ended == True:
+        round_ended = False
+        cash += 100
     if placing == True:
         towers[-1] = Tower(mouseX- towersWidth // 2, mouseY - towersHeight // 2, towersWidth, towersHeight, placingType)
     currentWave = waves - len(waveQueue)
@@ -234,25 +241,22 @@ while running:
                 screen.blit(wizard, tower.rect)
         else: 
             if tower.type == "range":
-                #screen.blit(pygame.transform.rotate(archer, tower.angle), (tower.x, tower.y))
-                #screen.blit(archer, tower.rect)
-                rotated_image = pygame.transform.rotate(archer, tower.angle)
-                rotated_rect = rotated_image.get_rect(center=tower.rect.center)
-                screen.blit(rotated_image, rotated_rect)
-                screen.blit(rotated_image, rotated_rect)
-                if tick == 30 and (not tower.rect == towers[-1].rect or placing == False):
-                    closest = None
-                    closestDist = 9999999999999
+                if tick == 0 and (not tower.rect == towers[-1].rect or placing == False):
+                    first_enemy = None
+                    best_progress = -1
+
                     for enemy in enemies:
-                        xDiff = abs(tower.x - enemy.x)
-                        yDiff = abs(tower.y - enemy.y)
-                        if math.hypot(xDiff, yDiff) < closestDist and not enemy.health <= 0:
-                            closest = enemy
-                            closestDist = math.hypot(xDiff, yDiff)
+                        if not enemy.health <= 0:
+                            targetX, targetY = wayPoints[enemy.wayPointIndex]
+                            dist_to_next = math.hypot(targetX - enemy.x, targetY - enemy.y)
+                            progress = enemy.wayPointIndex * 10000 - dist_to_next
+                            if progress > best_progress:
+                                best_progress = progress
+                                first_enemy = enemy
                     
                     for enemy in enemies:
-                            if enemy == closest and not enemy.health <= 0:
-                                enemy.health -= 5
+                            if enemy == first_enemy and not enemy.health <= 0:
+                                enemy.health -= 4
                                 targetX = enemy.x
                                 targetY = enemy.y
                                 dx = targetX - tower.rect.centerx
@@ -260,7 +264,11 @@ while running:
                                 angle = math.degrees(math.atan2(-dy, dx))
                                 tower.angle = angle
                                 break
-
+                rotated_image = pygame.transform.rotate(archer, tower.angle)
+                rotated_rect = rotated_image.get_rect(center=tower.rect.center)
+                screen.blit(rotated_image, rotated_rect)
+  
+                
                     
 
             elif tower.type == "short":
