@@ -118,9 +118,7 @@ placingType = None
 enemyQueue = []
 spawnTimer = 0
 
-wave1 = [
-    ['titan', 5]
-    ]
+wave1 = [['titan', 5]]
 wave2 = [['titan', 10]]
 wave3 = [['titan', 5], ['skeleton', 3]]
 wave4 = [['skeleton', 3], ['titan', 5], ['skeleton', 3]]
@@ -133,21 +131,21 @@ wave10 = [['bonerDragon', 3], ['necromancer', 1]]
 
 waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave10]
 
-
+waves = len(waveQueue)
 def waveStart(wave):
     for enemy in wave:
         if enemy[0] == 'titan':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(5, "titan", 3, 0, 195, 1))
+                enemyQueue.append(Enemy(5, "titan", 3, 0, 195, 5))
         elif enemy[0] == 'skeleton':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(10, "skeleton", 7, 0, 195, 2))
+                enemyQueue.append(Enemy(10, "skeleton", 7, 0, 195, 10))
         elif enemy[0] == 'bonerDragon':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(40, "bonerDragon", 12, 0, 195, 3))
+                enemyQueue.append(Enemy(40, "bonerDragon", 12, 0, 195, 40))
         elif enemy[0] == 'necromancer':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(85, "necromancer", 3, 0, 195, 4))
+                enemyQueue.append(Enemy(85, "necromancer", 3, 0, 195, 85))
 
 
 tick=0
@@ -175,11 +173,11 @@ while running:
     for event in pygame.event.get():
             if event.type == pygame.QUIT or health <= 0:
                 running = False
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and not waveQueue == [] and enemies == [] and enemyQueue == []:
+                    waveStart(waveQueue.pop(0))
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
                     enemies.append(Enemy(1, "titan", 5, 0, 195, 5))
-                elif event.button == 2:
-                    waveStart(waveQueue.pop(0))
                 else:
                     if placing == False:
                         for tower in towers:
@@ -203,7 +201,7 @@ while running:
                         on_path = any(screen.get_at(corner)[:3] == BROWN for corner in corners)
                         if collide == False and on_path == False:
                             placing = False
-                            
+                
 
     if len(enemyQueue) > 0:
         spawnTimer += 1
@@ -213,6 +211,11 @@ while running:
 
     if placing == True:
         towers[-1] = Tower(mouseX- towersWidth // 2, mouseY - towersHeight // 2, towersWidth, towersHeight, placingType)
+    currentWave = waves - len(waveQueue)
+
+    wave_content = f'Wave: {currentWave}'
+    wave_surface = font.render(wave_content, True, (255, 255, 255))
+    wave_rect = wave_surface.get_rect(topleft=(10, 10)) 
     cash_content = f'Cash: {cash}$'
     cash_surface = font.render(cash_content, True, (255, 255, 255))
     health_content = f'Health: {health}'
@@ -228,7 +231,7 @@ while running:
             elif tower.sellerType == "seller":
                 pygame.draw.rect(screen, (0, 255, 255), tower.rect)
             elif tower.sellerType == "area":
-                screen.blit(dragon, tower.rect)
+                screen.blit(wizard, tower.rect)
         else: 
             if tower.type == "range":
                 screen.blit(archer, tower.rect)
@@ -249,21 +252,24 @@ while running:
             elif tower.type == "short":
                 screen.blit(knight, tower.rect)
             elif tower.type == "area":
-                screen.blit(dragon, tower.rect)
+                screen.blit(wizard, tower.rect)
                 if not tower.rect == towers[-1].rect or placing == False:
-                    weapons.append(Weapon(tower.x + tower.w // 2, tower.y + tower.h // 2, 0, 0, 20, "area", 2))
+                    weapons.append(Weapon(tower.x + tower.w // 2, tower.y + tower.h // 2, 0, 0, 20, "area", 120))
+                    for enemy in enemies:
+                        if math.hypot(tower.x - enemy.x, tower.y - enemy.y) < 120 and tick % 10 == 0:
+                            enemy.health -= 1
     for weapon in weapons:
         if weapon.type == 'range':
             pygame.draw.rect(screen, (255, 255, 255), weapon.rect)
         elif weapon.type == 'area':
             pygame.draw.circle(screen, (0, 0, 255), (weapon.startX, weapon.startY), weapon.radius)
-    
+    weapons = []
     for enemy in enemies:
         if enemy.health <= 0:
             enemies.pop(enemies.index(enemy))
             cash += 15
         enemy.move()
-
+    
         if enemy.x == 1200 and enemy.y == 620:
             enemies.pop(enemies.index(enemy))
             health -= enemy.damage
@@ -275,7 +281,10 @@ while running:
             screen.blit(skeleton, enemy.rect)
         elif enemy.type == 'necromancer':
             screen.blit(necromancer, enemy.rect)
+    if health <= 0:
+        running = False
     screen.blit(cash_surface, cash_rect)
     screen.blit(health_surface, health_rect)
+    screen.blit(wave_surface, wave_rect)
     pygame.display.flip()
     clock.tick(60)
