@@ -45,7 +45,7 @@ for i in range(100):
 wayPoints = ([(0, 195), (400, 195)] + loop_points + [(800, 620), (1200, 620)])
 
 class Tower:
-    def __init__ (Tower, towerX, towerY, width, height, towerType = None, sellerType = False, sellerCost = 0):
+    def __init__ (Tower, towerX, towerY, width, height, towerType = None, sellerType = False, sellerCost = 0, angle = 0):
         Tower.x = towerX
         Tower.y = towerY
         Tower.type = towerType
@@ -53,6 +53,7 @@ class Tower:
         Tower.sellerType = sellerType
         Tower.w = width
         Tower.h = height
+        Tower.angle = angle
         Tower.rect = (pygame.Rect(towerX, towerY, width, height))
 
 class Weapon:
@@ -99,7 +100,7 @@ class Enemy:
         Enemy.rect.x = Enemy.x-40
         Enemy.rect.y = Enemy.y-40
 
-
+rotatedRects = []
 closest = None
 closestDist = 'inf'
 towers = [Tower(1250, 350, towersWidth, towersHeight, "seller", "range", 200), Tower(1250, 425, towersWidth, towersHeight, "seller", "short", 100), Tower(1250, 500, towersWidth, towersHeight ,"seller", "area", 50)]
@@ -148,7 +149,7 @@ def waveStart(wave):
                 enemyQueue.append(Enemy(85, "necromancer", 3, 0, 195, 85))
 
 
-tick=0
+tick = 0
 while running:
     tick += 1
     tick = tick % 60
@@ -221,7 +222,6 @@ while running:
     health_content = f'Health: {health}'
     health_surface = font.render(health_content, True, (255, 255, 255))
 
-
     for tower in towers:
         if tower.type == "seller":
             if tower.sellerType == "range":
@@ -234,7 +234,12 @@ while running:
                 screen.blit(wizard, tower.rect)
         else: 
             if tower.type == "range":
-                screen.blit(archer, tower.rect)
+                #screen.blit(pygame.transform.rotate(archer, tower.angle), (tower.x, tower.y))
+                #screen.blit(archer, tower.rect)
+                rotated_image = pygame.transform.rotate(archer, tower.angle)
+                rotated_rect = rotated_image.get_rect(center=tower.rect.center)
+                screen.blit(rotated_image, rotated_rect)
+                screen.blit(rotated_image, rotated_rect)
                 if tick == 30 and (not tower.rect == towers[-1].rect or placing == False):
                     closest = None
                     closestDist = 9999999999999
@@ -248,7 +253,16 @@ while running:
                     for enemy in enemies:
                             if enemy == closest and not enemy.health <= 0:
                                 enemy.health -= 5
+                                targetX = enemy.x
+                                targetY = enemy.y
+                                dx = targetX - tower.rect.centerx
+                                dy = targetY - tower.rect.centery
+                                angle = math.degrees(math.atan2(-dy, dx))
+                                tower.angle = angle
                                 break
+
+                    
+
             elif tower.type == "short":
                 screen.blit(knight, tower.rect)
             elif tower.type == "area":
