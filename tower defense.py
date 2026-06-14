@@ -63,7 +63,7 @@ class Weapon:
             Weapon.rect = (pygame.Rect(startX, startY, 20, 20))
 
 class Enemy:
-    def __init__(Enemy, health, enemyType, speed, x, y, damage):
+    def __init__(Enemy, health, enemyType, speed, x, y, damage, wait):
         Enemy.health = health
         Enemy.type = enemyType
         Enemy.speed = speed
@@ -72,6 +72,7 @@ class Enemy:
         Enemy.rect = pygame.Rect(x, y, 40, 40)
         Enemy.wayPointIndex = 0
         Enemy.damage = damage
+        Enemy.wait = wait
 
 
     def move(Enemy):
@@ -108,17 +109,17 @@ health_rect = health_surface.get_rect(topleft=(1060, 50))
 
 spawnTimer = 0
 
-wave1 = [['titan', 5]]
-wave2 = [['titan', 10]]
-wave3 = [['titan', 5], ['skeleton', 3]]
-wave4 = [['skeleton', 3], ['titan', 5], ['skeleton', 3]]
-wave5 = [['titan', 20]]
-wave6 = [['skeleton', 5], ['bonerDragon', 1]]
-wave7 = [['bonerDragon', 3]]
-wave8 = [['titan', 10], ['skeleton', 5], ['bonerDragon', 2]]
-wave9 = [['necromancer', 1]]
-wave10 = [['bonerDragon', 3], ['necromancer', 1]]
-wave11 = [['titan', 10], ['air', 7], ['bonerDragon', 20]]
+wave1 = [['titan', 5, 20]]
+wave2 = [['titan', 10, 0]]
+wave3 = [['titan', 5, 0], ['skeleton', 3, 0]]
+wave4 = [['skeleton', 3, 0], ['titan', 5, 0], ['skeleton', 3, 0]]
+wave5 = [['titan', 20, 0]]
+wave6 = [['skeleton', 5, 0], ['bonerDragon', 1, 0]]
+wave7 = [['bonerDragon', 3, 0]]
+wave8 = [['titan', 10, 0], ['skeleton', 5, 0], ['bonerDragon', 2, 0]]
+wave9 = [['necromancer', 1, 0]]
+wave10 = [['bonerDragon', 3, 0], ['necromancer', 1, 0]]
+wave11 = [['titan', 10, 0], ['air', 7, 0], ['bonerDragon', 20, 0]]
 
 waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave10, wave11]
 
@@ -128,16 +129,16 @@ def waveStart(wave):
     for enemy in wave:
         if enemy[0] == 'titan':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(5, "titan", 3, 0, 195, 5))
+                enemyQueue.append(Enemy(5, "titan", 3, 0, 195, 5, enemy[2]))
         elif enemy[0] == 'skeleton':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(10, "skeleton", 7, 0, 195, 10))
+                enemyQueue.append(Enemy(10, "skeleton", 7, 0, 195, 10, enemy[2]))
         elif enemy[0] == 'bonerDragon':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(40, "bonerDragon", 12, 0, 195, 40))
+                enemyQueue.append(Enemy(40, "bonerDragon", 12, 0, 195, 40, enemy[2]))
         elif enemy[0] == 'necromancer':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(200, "necromancer", 3, 0, 195, 200))
+                enemyQueue.append(Enemy(200, "necromancer", 3, 0, 195, 200, enemy[2]))
         elif enemy[0] == 'air':
             for x in range(enemy[1]):
                 enemyQueue.append("air")
@@ -203,11 +204,12 @@ while running:
         spawnTimer += 1
     if spawnTimer >= 30 and not enemyQueue == []:
         if not enemyQueue[0] == 'air':
+            spawnTimer = int(enemyQueue[0].wait)
             enemies.append(enemyQueue.pop(0))
-            spawnTimer = 0
+            
         else:
+            spawnTimer = int(enemyQueue[0].wait)
             enemyQueue.pop(0)
-            spawnTimer = 0
         if enemyQueue == []:
             round_ended = True
     if enemies == [] and round_ended == True:
