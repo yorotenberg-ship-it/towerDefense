@@ -3,15 +3,9 @@ clock = pygame.time.Clock()
 pygame.display.set_caption("Tower Defense Game")
 pygame.init()
 screen = pygame.display.set_mode((1400, 800))
-running = True
-placing = False
-down = False
-collide=False
-on_path = False
-cash = 500
-health = 100
-towersWidth = 80
-towersHeight = 80
+placing, down, collide, on_path, placingType, running = False, False, False, False, None, True
+cash, health = 500, 100
+towersWidth, towersHeight = 80, 80
 if True:
     titan = pygame.image.load('graphics/titan.png')
     titan = pygame.transform.scale(titan, (80, 80))
@@ -29,8 +23,7 @@ if True:
     archer = pygame.transform.scale(archer, (towersWidth, towersHeight))
     knight = pygame.image.load('graphics/knight.png')
     knight = pygame.transform.scale(knight, (towersWidth, towersHeight))
-LOOP_CENTER = (600, 405) 
-LOOP_RADIUS = 210  
+LOOP_CENTER, LOOP_RADIUS = (600, 405), 210  
 
 
 
@@ -101,12 +94,9 @@ class Enemy:
         Enemy.rect.x = Enemy.x-40
         Enemy.rect.y = Enemy.y-40
 
-rotatedRects = []
-closest = None
-closestDist = 'inf'
 towers = [Tower(1250, 350, towersWidth, towersHeight, "seller", "range", 200), Tower(1250, 425, towersWidth, towersHeight, "seller", "short", 100), Tower(1250, 500, towersWidth, towersHeight ,"seller", "area", 50)]
-weapons = []
-enemies = []
+weapons, enemies, enemyQueue = [], [], []
+#enemies = []
 font = pygame.font.Font(None, 36)
 cash_content = f'Cash: {cash}$'
 cash_surface = font.render(cash_content, True, (255, 255, 255))
@@ -115,9 +105,7 @@ cash_rect = cash_surface.get_rect(topleft=(1060, 10))
 health_content = f'health: {health}$'
 health_surface = font.render(health_content, True, (255, 255, 255))
 health_rect = health_surface.get_rect(topleft=(1060, 50))
-placingType = None
 
-enemyQueue = []
 spawnTimer = 0
 
 wave1 = [['titan', 5]]
@@ -148,7 +136,7 @@ def waveStart(wave):
                 enemyQueue.append(Enemy(40, "bonerDragon", 12, 0, 195, 40))
         elif enemy[0] == 'necromancer':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(85, "necromancer", 3, 0, 195, 85))
+                enemyQueue.append(Enemy(200, "necromancer", 3, 0, 195, 200))
 
 
 round_ended = False
