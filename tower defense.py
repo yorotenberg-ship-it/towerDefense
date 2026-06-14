@@ -113,13 +113,14 @@ wave2 = [['titan', 10]]
 wave3 = [['titan', 5], ['skeleton', 3]]
 wave4 = [['skeleton', 3], ['titan', 5], ['skeleton', 3]]
 wave5 = [['titan', 20]]
-wave6 = [['skeleton',5], ['bonerDragon', 1]]
+wave6 = [['skeleton', 5], ['bonerDragon', 1]]
 wave7 = [['bonerDragon', 3]]
 wave8 = [['titan', 10], ['skeleton', 5], ['bonerDragon', 2]]
 wave9 = [['necromancer', 1]]
 wave10 = [['bonerDragon', 3], ['necromancer', 1]]
+wave11 = [['titan', 10], ['air', 7], ['bonerDragon', 20]]
 
-waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave10]
+waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave10, wave11]
 
 waves = len(waveQueue)
 def waveStart(wave):
@@ -137,6 +138,9 @@ def waveStart(wave):
         elif enemy[0] == 'necromancer':
             for x in range(enemy[1]):
                 enemyQueue.append(Enemy(200, "necromancer", 3, 0, 195, 200))
+        elif enemy[0] == 'air':
+            for x in range(enemy[1]):
+                enemyQueue.append("air")
 
 
 round_ended = False
@@ -198,8 +202,12 @@ while running:
     if len(enemyQueue) > 0:
         spawnTimer += 1
     if spawnTimer >= 30 and not enemyQueue == []:
-        enemies.append(enemyQueue.pop(0))
-        spawnTimer = 0
+        if not enemyQueue[0] == 'air':
+            enemies.append(enemyQueue.pop(0))
+            spawnTimer = 0
+        else:
+            enemyQueue.pop(0)
+            spawnTimer = 0
         if enemyQueue == []:
             round_ended = True
     if enemies == [] and round_ended == True:
@@ -229,7 +237,7 @@ while running:
                 screen.blit(wizard, tower.rect)
         else: 
             if tower.type == "range":
-                if tick == 0 and (not tower.rect == towers[-1].rect or placing == False):
+                if tick % 60 == 0 and (not tower.rect == towers[-1].rect or placing == False):
                     first_enemy = None
                     best_progress = -1
 
