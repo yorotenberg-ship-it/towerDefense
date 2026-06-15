@@ -19,6 +19,8 @@ if True:
     skeletonKing = pygame.transform.scale(skeletonKing, (80, 80))
     wizard = pygame.image.load('graphics/wizard.png')
     wizard = pygame.transform.scale(wizard, (towersWidth, towersHeight))
+    wizardArea = pygame.image.load('graphics/wizardArea.png')
+    wizardArea = pygame.transform.scale(wizardArea, (300, 300))
     dragon = pygame.image.load('graphics/dragon.png')
     dragon = pygame.transform.scale(dragon, (towersWidth, towersHeight))
     archer = pygame.image.load('graphics/archer.png')
@@ -179,7 +181,7 @@ while running:
                     waveStart(waveQueue.pop(0))
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
-                    enemies.append(Enemy(1, "titan", 5, 0, 195, 5))
+                    enemyQueue.append(Enemy(1, "titan", 5, 0, 195, 5, 30))
                 else:
                     if placing == False:
                         for tower in towers:
@@ -279,15 +281,18 @@ while running:
             elif tower.type == "area":
                 screen.blit(wizard, tower.rect)
                 if not tower.rect == towers[-1].rect or placing == False:
-                    weapons.append(Weapon(tower.x + tower.w // 2, tower.y + tower.h // 2, 0, 0, 20, "area", 120))
+                    screen.blit(wizardArea, [tower.rect[0] - 110, tower.rect[1]- 110])
+                    #weapons.append(Weapon(tower.x + tower.w // 2, tower.y + tower.h // 2, 0, 0, 20, "area", 120))
+                    #pygame.draw.circle(screen, (0, 0, 255), (tower.x + tower.w // 2, tower.y + tower.h // 2), 120)
+                    screen.blit(wizard, tower.rect)
                     for enemy in enemies:
                         if math.hypot(tower.x - enemy.x, tower.y - enemy.y) < 120 and tick % 10 == 0:
                             enemy.health -= 1
-    for weapon in weapons:
+    """for weapon in weapons:
         if weapon.type == 'range':
             pygame.draw.rect(screen, (255, 255, 255), weapon.rect)
         elif weapon.type == 'area':
-            pygame.draw.circle(screen, (0, 0, 255), (weapon.startX, weapon.startY), weapon.radius)
+            pygame.draw.circle(screen, (0, 0, 255), (weapon.startX, weapon.startY), weapon.radius)"""
     weapons = []
     for enemy in enemies:
         if enemy.health <= 0:
