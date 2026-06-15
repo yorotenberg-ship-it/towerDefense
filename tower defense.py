@@ -3,33 +3,29 @@ clock = pygame.time.Clock()
 pygame.display.set_caption("Tower Defense Game")
 pygame.init()
 screen = pygame.display.set_mode((1400, 800))
-running = True
-placing = False
-down = False
-collide=False
-on_path = False
-cash = 500
-health = 100
-towersWidth = 80
-towersHeight = 80
-titan = pygame.image.load('graphics/titan.png')
-titan = pygame.transform.scale(titan, (80, 80))
-bonerDragon = pygame.image.load('graphics/bonerDragon.png')
-bonerDragon = pygame.transform.scale(bonerDragon, (80, 80))
-skeleton = pygame.image.load('graphics/skeleton.png')
-skeleton = pygame.transform.scale(skeleton, (80, 80))
-necromancer = pygame.image.load('graphics/necromancer.png')
-necromancer = pygame.transform.scale(necromancer, (110, 80))
-wizard = pygame.image.load('graphics/wizard.png')
-wizard = pygame.transform.scale(wizard, (towersWidth, towersHeight))
-dragon = pygame.image.load('graphics/dragon.png')
-dragon = pygame.transform.scale(dragon, (towersWidth, towersHeight))
-archer = pygame.image.load('graphics/archer.png')
-archer = pygame.transform.scale(archer, (towersWidth, towersHeight))
-knight = pygame.image.load('graphics/knight.png')
-knight = pygame.transform.scale(knight, (towersWidth, towersHeight))
-LOOP_CENTER = (600, 405) 
-LOOP_RADIUS = 210  
+placing, down, collide, on_path, placingType, running = False, False, False, False, None, True
+cash, health = 500, 100
+towersWidth, towersHeight = 80, 80
+if True:
+    titan = pygame.image.load('graphics/titan.png')
+    titan = pygame.transform.scale(titan, (80, 80))
+    bonerDragon = pygame.image.load('graphics/bonerDragon.png')
+    bonerDragon = pygame.transform.scale(bonerDragon, (80, 80))
+    skeleton = pygame.image.load('graphics/skeleton.png')
+    skeleton = pygame.transform.scale(skeleton, (80, 80))
+    necromancer = pygame.image.load('graphics/necromancer.png')
+    necromancer = pygame.transform.scale(necromancer, (110, 80))
+    skeletonKing = pygame.image.load('graphics/skeletonKing.png')
+    skeletonKing = pygame.transform.scale(skeletonKing, (80, 80))
+    wizard = pygame.image.load('graphics/wizard.png')
+    wizard = pygame.transform.scale(wizard, (towersWidth, towersHeight))
+    dragon = pygame.image.load('graphics/dragon.png')
+    dragon = pygame.transform.scale(dragon, (towersWidth, towersHeight))
+    archer = pygame.image.load('graphics/archer.png')
+    archer = pygame.transform.scale(archer, (towersWidth, towersHeight))
+    knight = pygame.image.load('graphics/knight.png')
+    knight = pygame.transform.scale(knight, (towersWidth, towersHeight))
+LOOP_CENTER, LOOP_RADIUS = (600, 405), 210  
 
 
 
@@ -45,7 +41,7 @@ for i in range(100):
 wayPoints = ([(0, 195), (400, 195)] + loop_points + [(800, 620), (1200, 620)])
 
 class Tower:
-    def __init__ (Tower, towerX, towerY, width, height, towerType = None, sellerType = False, sellerCost = 0):
+    def __init__ (Tower, towerX, towerY, width, height, towerType = None, sellerType = False, sellerCost = 0, angle = 0):
         Tower.x = towerX
         Tower.y = towerY
         Tower.type = towerType
@@ -53,6 +49,7 @@ class Tower:
         Tower.sellerType = sellerType
         Tower.w = width
         Tower.h = height
+        Tower.angle = angle
         Tower.rect = (pygame.Rect(towerX, towerY, width, height))
 
 class Weapon:
@@ -68,7 +65,7 @@ class Weapon:
             Weapon.rect = (pygame.Rect(startX, startY, 20, 20))
 
 class Enemy:
-    def __init__(Enemy, health, enemyType, speed, x, y, damage):
+    def __init__(Enemy, health, enemyType, speed, x, y, damage, wait):
         Enemy.health = health
         Enemy.type = enemyType
         Enemy.speed = speed
@@ -77,6 +74,7 @@ class Enemy:
         Enemy.rect = pygame.Rect(x, y, 40, 40)
         Enemy.wayPointIndex = 0
         Enemy.damage = damage
+        Enemy.wait = wait
 
 
     def move(Enemy):
@@ -99,12 +97,9 @@ class Enemy:
         Enemy.rect.x = Enemy.x-40
         Enemy.rect.y = Enemy.y-40
 
-
-closest = None
-closestDist = 'inf'
 towers = [Tower(1250, 350, towersWidth, towersHeight, "seller", "range", 200), Tower(1250, 425, towersWidth, towersHeight, "seller", "short", 100), Tower(1250, 500, towersWidth, towersHeight ,"seller", "area", 50)]
-weapons = []
-enemies = []
+weapons, enemies, enemyQueue = [], [], []
+#enemies = []
 font = pygame.font.Font(None, 36)
 cash_content = f'Cash: {cash}$'
 cash_surface = font.render(cash_content, True, (255, 255, 255))
@@ -113,42 +108,49 @@ cash_rect = cash_surface.get_rect(topleft=(1060, 10))
 health_content = f'health: {health}$'
 health_surface = font.render(health_content, True, (255, 255, 255))
 health_rect = health_surface.get_rect(topleft=(1060, 50))
-placingType = None
 
-enemyQueue = []
 spawnTimer = 0
 
-wave1 = [['titan', 5]]
-wave2 = [['titan', 10]]
-wave3 = [['titan', 5], ['skeleton', 3]]
-wave4 = [['skeleton', 3], ['titan', 5], ['skeleton', 3]]
-wave5 = [['titan', 20]]
-wave6 = [['skeleton',5], ['bonerDragon', 1]]
-wave7 = [['bonerDragon', 3]]
-wave8 = [['titan', 10], ['skeleton', 5], ['bonerDragon', 2]]
-wave9 = [['necromancer', 1]]
-wave10 = [['bonerDragon', 3], ['necromancer', 1]]
+wave1 = [['titan', 5, 0], ['skeletonKing', 5, 0]]
+wave2 = [['titan', 10, 0]]
+wave3 = [['titan', 5, 0], ['skeleton', 3, 0]]
+wave4 = [['skeleton', 3, 0], ['titan', 5, 0], ['skeleton', 3, 0]]
+wave5 = [['titan', 20, 0]]
+wave6 = [['skeleton', 5, 0], ['bonerDragon', 1, 0]]
+wave7 = [['bonerDragon', 3, 0]]
+wave8 = [['titan', 10, 0], ['skeleton', 5, 0], ['bonerDragon', 2, 0]]
+wave9 = [['necromancer', 1, 0]]
+wave10 = [['bonerDragon', 3, 0], ['necromancer', 1, 0]]
+wave11 = [['titan', 10, 0], ['air', 7, 0], ['bonerDragon', 20, 0]]
 
-waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave10]
+waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave10, wave11]
 
-
+waves = len(waveQueue)
 def waveStart(wave):
+    global cash, enemies, enemyQueue
     for enemy in wave:
         if enemy[0] == 'titan':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(5, "titan", 3, 0, 195, 1))
+                enemyQueue.append(Enemy(5, "titan", 3, 0, 195, 5, enemy[2]))
         elif enemy[0] == 'skeleton':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(10, "skeleton", 7, 0, 195, 2))
+                enemyQueue.append(Enemy(10, "skeleton", 7, 0, 195, 10, enemy[2]))
         elif enemy[0] == 'bonerDragon':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(40, "bonerDragon", 12, 0, 195, 3))
+                enemyQueue.append(Enemy(40, "bonerDragon", 12, 0, 195, 40, enemy[2]))
         elif enemy[0] == 'necromancer':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(85, "necromancer", 3, 0, 195, 4))
+                enemyQueue.append(Enemy(200, "necromancer", 3, 0, 195, 200, enemy[2]))
+        elif enemy[0] == 'skeletonKing':
+            for x in range(enemy[1]):
+                enemyQueue.append(Enemy(500, "skeletonKing", 3, 0, 195, 500, enemy[2]))
+        elif enemy[0] == 'air':
+            for x in range(enemy[1]):
+                enemyQueue.append("air")
 
 
-tick=0
+round_ended = False
+tick = 0
 while running:
     tick += 1
     tick = tick % 60
@@ -171,13 +173,13 @@ while running:
     pygame.draw.rect(screen, GREY, (1200, 0, 200, 800))
 
     for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT or health <= 0:
                 running = False
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and not waveQueue == [] and enemies == [] and enemyQueue == []:
+                    waveStart(waveQueue.pop(0))
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
                     enemies.append(Enemy(1, "titan", 5, 0, 195, 5))
-                elif event.button == 2:
-                    waveStart(waveQueue.pop(0))
                 else:
                     if placing == False:
                         for tower in towers:
@@ -201,21 +203,34 @@ while running:
                         on_path = any(screen.get_at(corner)[:3] == BROWN for corner in corners)
                         if collide == False and on_path == False:
                             placing = False
-                            
+                
 
     if len(enemyQueue) > 0:
         spawnTimer += 1
-    if spawnTimer >= 30:
-        enemies.append(enemyQueue.pop(0))
-        spawnTimer = 0
-
+    if spawnTimer >= 30 and not enemyQueue == []:
+        if not enemyQueue[0] == 'air':
+            spawnTimer = int(enemyQueue[0].wait)
+            enemies.append(enemyQueue.pop(0))
+            
+        else:
+            spawnTimer = int(enemyQueue[0].wait)
+            enemyQueue.pop(0)
+        if enemyQueue == []:
+            round_ended = True
+    if enemies == [] and round_ended == True:
+        round_ended = False
+        cash += 100
     if placing == True:
         towers[-1] = Tower(mouseX- towersWidth // 2, mouseY - towersHeight // 2, towersWidth, towersHeight, placingType)
+    currentWave = waves - len(waveQueue)
+
+    wave_content = f'Wave: {currentWave}'
+    wave_surface = font.render(wave_content, True, (255, 255, 255))
+    wave_rect = wave_surface.get_rect(topleft=(10, 10)) 
     cash_content = f'Cash: {cash}$'
     cash_surface = font.render(cash_content, True, (255, 255, 255))
     health_content = f'Health: {health}'
     health_surface = font.render(health_content, True, (255, 255, 255))
-
 
     for tower in towers:
         if tower.type == "seller":
@@ -223,49 +238,63 @@ while running:
                 screen.blit(archer, tower.rect)
             elif tower.sellerType == "short":
                 screen.blit(knight, tower.rect)
-                #pygame.draw.rect(screen, (255, 255, 0), tower.rect)
             elif tower.sellerType == "seller":
                 pygame.draw.rect(screen, (0, 255, 255), tower.rect)
             elif tower.sellerType == "area":
-                screen.blit(dragon, tower.rect)
-                #pygame.draw.rect(screen, (255, 255, 255), tower.rect)
+                screen.blit(wizard, tower.rect)
         else: 
             if tower.type == "range":
-                #pygame.draw.rect(screen, (255, 0, 0), tower.rect)
-                screen.blit(archer, tower.rect)
-                if tick == 30 and (not tower.rect == towers[-1].rect or placing == False):
-                    closest = None
-                    closestDist = 9999999999999
+                if tick % 60 == 0 and (not tower.rect == towers[-1].rect or placing == False):
+                    first_enemy = None
+                    best_progress = -1
+
                     for enemy in enemies:
-                        xDiff = abs(tower.x - enemy.x)
-                        yDiff = abs(tower.y - enemy.y)
-                        if math.hypot(xDiff, yDiff) < closestDist and not enemy.health <= 0:
-                            closest = enemy
-                            closestDist = math.hypot(xDiff, yDiff)
+                        if not enemy.health <= 0:
+                            targetX, targetY = wayPoints[enemy.wayPointIndex]
+                            dist_to_next = math.hypot(targetX - enemy.x, targetY - enemy.y)
+                            progress = enemy.wayPointIndex * 10000 - dist_to_next
+                            if progress > best_progress:
+                                best_progress = progress
+                                first_enemy = enemy
+                    
                     for enemy in enemies:
-                            if enemy == closest and not enemy.health <= 0:
-                                enemy.health -= 5
+                            if enemy == first_enemy and not enemy.health <= 0:
+                                enemy.health -= 4
+                                targetX = enemy.x
+                                targetY = enemy.y
+                                dx = targetX - tower.rect.centerx
+                                dy = targetY - tower.rect.centery
+                                angle = math.degrees(math.atan2(-dy, dx))
+                                tower.angle = angle
                                 break
+                rotated_image = pygame.transform.rotate(archer, tower.angle)
+                rotated_rect = rotated_image.get_rect(center=tower.rect.center)
+                screen.blit(rotated_image, rotated_rect)
+  
+                
+                    
+
             elif tower.type == "short":
                 screen.blit(knight, tower.rect)
-                #pygame.draw.rect(screen, (255, 255, 0), tower.rect)
             elif tower.type == "area":
-                screen.blit(dragon, tower.rect)
-                #pygame.draw.rect(screen, (255, 255, 255), tower.rect)
+                screen.blit(wizard, tower.rect)
                 if not tower.rect == towers[-1].rect or placing == False:
-                    weapons.append(Weapon(tower.x + tower.w // 2, tower.y + tower.h // 2, 0, 0, 20, "area", 2))
+                    weapons.append(Weapon(tower.x + tower.w // 2, tower.y + tower.h // 2, 0, 0, 20, "area", 120))
+                    for enemy in enemies:
+                        if math.hypot(tower.x - enemy.x, tower.y - enemy.y) < 120 and tick % 10 == 0:
+                            enemy.health -= 1
     for weapon in weapons:
         if weapon.type == 'range':
             pygame.draw.rect(screen, (255, 255, 255), weapon.rect)
         elif weapon.type == 'area':
             pygame.draw.circle(screen, (0, 0, 255), (weapon.startX, weapon.startY), weapon.radius)
-    
+    weapons = []
     for enemy in enemies:
         if enemy.health <= 0:
             enemies.pop(enemies.index(enemy))
             cash += 15
         enemy.move()
-
+    
         if enemy.x == 1200 and enemy.y == 620:
             enemies.pop(enemies.index(enemy))
             health -= enemy.damage
@@ -277,7 +306,12 @@ while running:
             screen.blit(skeleton, enemy.rect)
         elif enemy.type == 'necromancer':
             screen.blit(necromancer, enemy.rect)
+        elif enemy.type == 'skeletonKing':
+            screen.blit(skeletonKing, enemy.rect)
+    if health <= 0:
+        running = False
     screen.blit(cash_surface, cash_rect)
     screen.blit(health_surface, health_rect)
+    screen.blit(wave_surface, wave_rect)
     pygame.display.flip()
     clock.tick(60)
