@@ -118,9 +118,7 @@ placingType = None
 enemyQueue = []
 spawnTimer = 0
 
-wave1 = [
-    ['titan', 5]
-    ]
+wave1 = [['titan', 5]]
 wave2 = [['titan', 10]]
 wave3 = [['titan', 5], ['skeleton', 3]]
 wave4 = [['skeleton', 3], ['titan', 5], ['skeleton', 3]]
@@ -244,7 +242,6 @@ while running:
                         if math.hypot(xDiff, yDiff) < closestDist and not enemy.health <= 0:
                             closest = enemy
                             closestDist = math.hypot(xDiff, yDiff)
-                    
                     for enemy in enemies:
                             if enemy == closest and not enemy.health <= 0:
                                 enemy.health -= 5
