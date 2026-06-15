@@ -268,7 +268,7 @@ while running:
                                 dy = targetY - tower.rect.centery
                                 angle = math.degrees(math.atan2(-dy, dx))
                                 tower.angle = angle
-                                break
+                                pygame.draw.line(screen, (255, 255, 255), (tower.rect.centerx, tower.rect.centery), (targetX, targetY), 5)
                 rotated_image = pygame.transform.rotate(archer, tower.angle)
                 rotated_rect = rotated_image.get_rect(center=tower.rect.center)
                 screen.blit(rotated_image, rotated_rect)
