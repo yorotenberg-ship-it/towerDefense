@@ -276,7 +276,7 @@ while running:
                         if math.hypot(tower.x - enemy.x, tower.y - enemy.y) < 120 and tick % 6 == 0:
                             enemy.health -= 1
     weapons = []
-    for tower in towers:
+    """for tower in towers:
         if tower.type == "seller":
             if tower.sellerType == "range":
                 screen.blit(archer, tower.rect)
@@ -292,7 +292,7 @@ while running:
             elif tower.type == "short":
                 screen.blit(knight, tower.rect)
             elif tower.type == "area":
-                screen.blit(wizard, tower.rect)
+                screen.blit(wizard, tower.rect)"""
     for enemy in enemies:
         if enemy.health <= 0:
             enemies.pop(enemies.index(enemy))
