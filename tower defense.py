@@ -54,18 +54,6 @@ class Tower:
         Tower.angle = angle
         Tower.rect = (pygame.Rect(towerX, towerY, width, height))
 
-class Weapon:
-    def __init__(Weapon, startX, startY, goalX, goalY, damage, weaponType, radius = 0):
-        Weapon.goalX = goalX
-        Weapon.goalY = goalY
-        Weapon.damage = damage
-        Weapon.type = weaponType
-        Weapon.startX = startX
-        Weapon.startY = startY
-        Weapon.radius = radius
-        if not weaponType == 'area':
-            Weapon.rect = (pygame.Rect(startX, startY, 20, 20))
-
 class Enemy:
     def __init__(Enemy, health, enemyType, speed, x, y, damage, wait):
         Enemy.health = health
@@ -99,7 +87,7 @@ class Enemy:
         Enemy.rect.x = Enemy.x-40
         Enemy.rect.y = Enemy.y-40
 
-towers = [Tower(1250, 350, towersWidth, towersHeight, "seller", "range", 200), Tower(1250, 425, towersWidth, towersHeight, "seller", "short", 100), Tower(1250, 500, towersWidth, towersHeight ,"seller", "area", 50)]
+towers = [Tower(1250, 350, towersWidth, towersHeight, "seller", "range", 250), Tower(1250, 425, towersWidth, towersHeight, "seller", "short", 100), Tower(1250, 500, towersWidth, towersHeight ,"seller", "area", 550)]
 weapons, enemies, enemyQueue = [], [], []
 #enemies = []
 font = pygame.font.Font(None, 36)
@@ -113,7 +101,7 @@ health_rect = health_surface.get_rect(topleft=(1060, 50))
 
 spawnTimer = 0
 
-wave1 = [['titan', 5, 0], ['skeletonKing', 5, 0]]
+wave1 = [['titan', 5, 0]]
 wave2 = [['titan', 10, 0]]
 wave3 = [['titan', 5, 0], ['skeleton', 3, 0]]
 wave4 = [['skeleton', 3, 0], ['titan', 5, 0], ['skeleton', 3, 0]]
@@ -124,8 +112,9 @@ wave8 = [['titan', 10, 0], ['skeleton', 5, 0], ['bonerDragon', 2, 0]]
 wave9 = [['necromancer', 1, 0]]
 wave10 = [['bonerDragon', 3, 0], ['necromancer', 1, 0]]
 wave11 = [['titan', 10, 0], ['air', 7, 0], ['bonerDragon', 20, 0]]
+wave12 = [['skeletonKing', 1, 0]]
 
-waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave10, wave11]
+waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave10, wave11, wave12]
 
 waves = len(waveQueue)
 def waveStart(wave):
@@ -282,17 +271,10 @@ while running:
                 screen.blit(wizard, tower.rect)
                 if not tower.rect == towers[-1].rect or placing == False:
                     screen.blit(wizardArea, [tower.rect[0] - 110, tower.rect[1]- 110])
-                    #weapons.append(Weapon(tower.x + tower.w // 2, tower.y + tower.h // 2, 0, 0, 20, "area", 120))
-                    #pygame.draw.circle(screen, (0, 0, 255), (tower.x + tower.w // 2, tower.y + tower.h // 2), 120)
                     screen.blit(wizard, tower.rect)
                     for enemy in enemies:
-                        if math.hypot(tower.x - enemy.x, tower.y - enemy.y) < 120 and tick % 10 == 0:
+                        if math.hypot(tower.x - enemy.x, tower.y - enemy.y) < 120 and tick % 6 == 0:
                             enemy.health -= 1
-    """for weapon in weapons:
-        if weapon.type == 'range':
-            pygame.draw.rect(screen, (255, 255, 255), weapon.rect)
-        elif weapon.type == 'area':
-            pygame.draw.circle(screen, (0, 0, 255), (weapon.startX, weapon.startY), weapon.radius)"""
     weapons = []
     for enemy in enemies:
         if enemy.health <= 0:
