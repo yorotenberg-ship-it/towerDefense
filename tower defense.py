@@ -87,7 +87,7 @@ class Enemy:
         Enemy.rect.x = Enemy.x-40
         Enemy.rect.y = Enemy.y-40
 
-towers = [Tower(1250, 350, towersWidth, towersHeight, "seller", "range", 250), Tower(1250, 425, towersWidth, towersHeight, "seller", "short", 100), Tower(1250, 500, towersWidth, towersHeight ,"seller", "area", 550)]
+towers = [Tower(1250, 100, towersWidth, towersHeight, "seller", "range", 250), Tower(1250, 300, towersWidth, towersHeight, "seller", "short", 100), Tower(1250, 500, towersWidth, towersHeight ,"seller", "area", 550)]
 weapons, enemies, enemyQueue = [], [], []
 #enemies = []
 font = pygame.font.Font(None, 36)
@@ -162,6 +162,27 @@ while running:
     pygame.draw.circle(screen, GREEN, LOOP_CENTER, LOOP_INNER)
     pygame.draw.rect(screen, BROWN, (600, 560, 600, PATH_WIDTH))
     pygame.draw.rect(screen, GREY, (1200, 0, 200, 800))
+
+    name_surface = font.render('Archer', True, (0, 0, 0))
+    desc_surface = font.render('Dps = 4', True, (0, 0, 0))
+    cost_surface = font.render(f'${250}', True, (0, 0, 0))
+    screen.blit(name_surface, (1250, 60))
+    screen.blit(desc_surface, (1250, 80))
+    screen.blit(cost_surface, (1260, 170))
+
+    name_surface = font.render('Ice', True, (0, 0, 0))
+    desc_surface = font.render('Slows Enemies', True, (0, 0, 0))
+    cost_surface = font.render(f'${400}', True, (0, 0, 0))
+    screen.blit(name_surface, (1270, 260))
+    screen.blit(desc_surface, (1215, 280))
+    screen.blit(cost_surface, (1260, 370))
+
+    name_surface = font.render('Wizard', True, (0, 0, 0))
+    desc_surface = font.render('Dps = 10', True, (0, 0, 0)) 
+    cost_surface = font.render(f'${550}', True, (0, 0, 0))
+    screen.blit(name_surface, (1250, 460))
+    screen.blit(desc_surface, (1250, 480))
+    screen.blit(cost_surface, (1260, 570))
 
     for event in pygame.event.get():
             if event.type == pygame.QUIT or health <= 0:
