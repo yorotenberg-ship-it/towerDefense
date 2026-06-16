@@ -89,9 +89,8 @@ class Enemy:
         Enemy.rect.x = Enemy.x-40
         Enemy.rect.y = Enemy.y-40
 
-towers = [Tower(1250, 100, towersWidth, towersHeight, "seller", "range", 250), Tower(1250, 300, towersWidth, towersHeight, "seller", "short", 100), Tower(1250, 500, towersWidth, towersHeight ,"seller", "area", 550)]
+towers = [Tower(1250, 100, towersWidth, towersHeight, "seller", "range", 250), Tower(1250, 300, towersWidth, towersHeight, "seller", "short", 400), Tower(1250, 500, towersWidth, towersHeight ,"seller", "area", 550)]
 weapons, enemies, enemyQueue = [], [], []
-#enemies = []
 font = pygame.font.Font(None, 36)
 cash_content = f'Cash: {cash}$'
 cash_surface = font.render(cash_content, True, (255, 255, 255))
@@ -303,6 +302,8 @@ while running:
                     for enemy in enemies:
                         if math.hypot(tower.x - enemy.x, tower.y - enemy.y) < 200:
                             if not enemy.health <= 0 and not enemy.type == "skeletonKing":
+                                if not enemy.frozen > 20:
+                                    enemy.frozen = 20
                                 targetX, targetY = wayPoints[enemy.wayPointIndex]
                                 dist_to_next = math.hypot(targetX - enemy.x, targetY - enemy.y)
                                 progress = enemy.wayPointIndex * 10000 - dist_to_next
@@ -312,7 +313,7 @@ while running:
                             
                     for enemy in enemies:
                             if enemy == first_enemy and not enemy.health <= 0:
-                                enemy.frozen = 60
+                                enemy.frozen = 110
                                 tower.cooldown = 120
                                 targetX = enemy.x
                                 targetY = enemy.y
