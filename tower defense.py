@@ -265,7 +265,7 @@ while running:
         towers[-1] = Tower(mouseX- towersWidth // 2, mouseY - towersHeight // 2, towersWidth, towersHeight, placingType)
     currentWave = waves - len(waveQueue)
 
-    wave_content = f'Wave: {currentWave}'
+    wave_content = f'Wave: {currentWave} Press space to go to next wave'
     wave_surface = font.render(wave_content, True, (255, 255, 255))
     wave_rect = wave_surface.get_rect(topleft=(10, 10)) 
     cash_content = f'Cash: {cash}$'
