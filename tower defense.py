@@ -265,7 +265,7 @@ while running:
         towers[-1] = Tower(mouseX- towersWidth // 2, mouseY - towersHeight // 2, towersWidth, towersHeight, placingType)
     currentWave = waves - len(waveQueue)
  
-    wave_content = f'Wave: {currentWave}, & press space to start next wave'
+    wave_content = f'Wave: {currentWave}'
     wave_surface = font.render(wave_content, True, (255, 255, 255))
     wave_rect = wave_surface.get_rect(topleft=(10, 10)) 
 
@@ -423,9 +423,20 @@ while running:
             screen.blit(necromancer, enemy.rect)
         elif enemy.type == 'skeletonKing':
             screen.blit(skeletonKing, enemy.rect)
+
+    if len(enemies) == 0:
+        help_content = 'press space to start next wave'
+        help_surface = font.render(help_content, True, (255, 255, 255))
+        help_rect = help_surface.get_rect(topleft=(10, 30))
+    else:
+        help_content = ''
+        help_surface = font.render(help_content, True, (255, 255, 255))
+        help_rect = help_surface.get_rect(topleft=(10, 30))
+
     if health <= 0:
         running = False
     screen.blit(cash_surface, cash_rect)
     screen.blit(health_surface, health_rect)
     screen.blit(wave_surface, wave_rect)
+    screen.blit(help_surface, help_rect)
     pygame.display.flip()
