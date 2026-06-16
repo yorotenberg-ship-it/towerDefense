@@ -93,7 +93,7 @@ class Enemy:
             Enemy.rect.x = Enemy.x-40
             Enemy.rect.y = Enemy.y-40
 
-towers = [Tower(1250, 100, towersWidth, towersHeight, "seller", "range", 400), Tower(1250, 300, towersWidth, towersHeight, "seller", "short", 400), Tower(1250, 500, towersWidth, towersHeight ,"seller", "area", 550)]
+towers = [Tower(1250, 100, towersWidth, towersHeight, "seller", "range", 325), Tower(1250, 300, towersWidth, towersHeight, "seller", "short", 400), Tower(1250, 500, towersWidth, towersHeight ,"seller", "area", 550)]
 weapons, enemies, enemyQueue = [], [], []
 font = pygame.font.Font(None, 36)
 cash_content = f'Cash: {cash}$'
@@ -121,7 +121,7 @@ wave12 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
 wave13 = [['skeleton', 25, 29], ['air', 7, 0], ['bonerDragon', 4, 0]]
 wave14 = [['necromancer', 3, 0]]
 wave15 = [['bonerDragon', 7, 0], ['air', 7, 0], ['necromancer', 2, 0]]
-wave16 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
+wave16 = [['skeleton', 25, 29],['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
 wave17 = [['bonerDragon', 4, 29], ['air', 7, 0], ['bonerDragon', 4, 29]]
 wave18 = [['necromancer', 4, 0]]
 wave19 = [['bonerDragon', 10, 10]]
@@ -147,7 +147,7 @@ def waveStart(wave):
                 enemyQueue.append(Enemy(200, "necromancer", 3, 0, 195, 200, enemy[2]))
         elif enemy[0] == 'skeletonKing':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(800, "skeletonKing", 3, 0, 195, 500, enemy[2]))
+                enemyQueue.append(Enemy(800, "skeletonKing", 2.2, 0, 195, 500, enemy[2]))
         elif enemy[0] == 'air':
             for x in range(enemy[1]):
                 enemyQueue.append("air")
@@ -176,13 +176,13 @@ while running:
     pygame.draw.rect(screen, GREY, (1200, 0, 200, 800))
 
     name_surface = font.render('Archer', True, (0, 0, 0))
-    desc_surface = font.render('Dps = 4', True, (0, 0, 0))
-    cost_surface = font.render(f'${400}', True, (0, 0, 0))
+    desc_surface = font.render('Fires Arrows', True, (0, 0, 0))
+    cost_surface = font.render(f'${325}', True, (0, 0, 0))
     screen.blit(name_surface, (1250, 60))
     screen.blit(desc_surface, (1250, 80))
     screen.blit(cost_surface, (1260, 170))
 
-    name_surface = font.render('Ice', True, (0, 0, 0))
+    name_surface = font.render('Ice Knight', True, (0, 0, 0))
     desc_surface = font.render('Slows Enemies', True, (0, 0, 0))
     cost_surface = font.render(f'${400}', True, (0, 0, 0))
     screen.blit(name_surface, (1270, 260))
@@ -190,7 +190,7 @@ while running:
     screen.blit(cost_surface, (1260, 370))
 
     name_surface = font.render('Wizard', True, (0, 0, 0))
-    desc_surface = font.render('Dps = 10', True, (0, 0, 0)) 
+    desc_surface = font.render('Uses Magic', True, (0, 0, 0)) 
     cost_surface = font.render(f'${550}', True, (0, 0, 0))
     screen.blit(name_surface, (1250, 460))
     screen.blit(desc_surface, (1250, 480))
@@ -315,8 +315,8 @@ while running:
                             
                     for enemy in enemies:
                             if enemy == first_enemy and not enemy.health <= 0:
-                                enemy.frozen = 110
-                                tower.cooldown = 120
+                                enemy.frozen = 80
+                                tower.cooldown = 110
                                 targetX = enemy.x
                                 targetY = enemy.y
                                 dx = targetX - tower.rect.centerx
@@ -328,7 +328,7 @@ while running:
                     screen.blit(wizardArea, [tower.rect[0] - 110, tower.rect[1]- 110])
                     for enemy in enemies:
                         if math.hypot(tower.x - enemy.x, tower.y - enemy.y) < 120 and tick % 6 == 0:
-                            enemy.health -= 1
+                            enemy.health -= 2
     for tower in towers:
         if tower.type == 'area':
             screen.blit(wizard, tower.rect)
