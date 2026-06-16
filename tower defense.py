@@ -180,7 +180,7 @@ while running:
 
     name_surface = font.render('Archer', True, (0, 0, 0))
     desc_surface = font.render('Fires Arrows', True, (0, 0, 0))
-    cost_surface = font.render(f'${400}', True, (0, 0, 0))
+    cost_surface = font.render(f'${325}', True, (0, 0, 0))
     screen.blit(name_surface, (1260, 20))
     screen.blit(desc_surface, (1230, 40))
     screen.blit(cost_surface, (1260, 130))
@@ -271,6 +271,7 @@ while running:
 
     cash_content = f'Cash: {cash}$'
     cash_surface = font.render(cash_content, True, (255, 255, 255))
+
     health_content = f'Health: {health}'
     health_surface = font.render(health_content, True, (255, 255, 255))
 
@@ -428,4 +429,3 @@ while running:
     screen.blit(health_surface, health_rect)
     screen.blit(wave_surface, wave_rect)
     pygame.display.flip()
-    #clock.tick(120)
