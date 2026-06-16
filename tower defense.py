@@ -428,8 +428,4 @@ while running:
     screen.blit(cash_surface, cash_rect)
     screen.blit(health_surface, health_rect)
     screen.blit(wave_surface, wave_rect)
-<<<<<<< HEAD
     pygame.display.flip()
-=======
-    pygame.display.flip()
->>>>>>> 74df01d99f84c9c3892cbe8793001c5f06f0e7c9
