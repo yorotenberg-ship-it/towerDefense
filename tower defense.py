@@ -93,7 +93,7 @@ class Enemy:
             Enemy.rect.x = Enemy.x-40
             Enemy.rect.y = Enemy.y-40
 
-towers = [Tower(1250, 100, towersWidth, towersHeight, "seller", "range", 250), Tower(1250, 300, towersWidth, towersHeight, "seller", "short", 400), Tower(1250, 500, towersWidth, towersHeight ,"seller", "area", 550)]
+towers = [Tower(1250, 100, towersWidth, towersHeight, "seller", "range", 400), Tower(1250, 300, towersWidth, towersHeight, "seller", "short", 400), Tower(1250, 500, towersWidth, towersHeight ,"seller", "area", 550)]
 weapons, enemies, enemyQueue = [], [], []
 font = pygame.font.Font(None, 36)
 cash_content = f'Cash: {cash}$'
@@ -106,7 +106,7 @@ health_rect = health_surface.get_rect(topleft=(1060, 50))
 
 spawnTimer = 0
 
-wave1 = [['skeletonKing', 1, 0]]
+wave1 = [['titan', 5, 0]]
 wave2 = [['titan', 10, 0]]
 wave3 = [['titan', 5, 0], ['skeleton', 3, 0]]
 wave4 = [['skeleton', 3, 0], ['titan', 5, 0], ['skeleton', 3, 0]]
@@ -157,7 +157,6 @@ round_ended = False
 tick = 0
 while running:
     tick += 1
-    #tick = tick % 60
     mouseX, mouseY = pygame.mouse.get_pos()
 
     GREEN = (82, 130, 37)
@@ -177,8 +176,8 @@ while running:
     pygame.draw.rect(screen, GREY, (1200, 0, 200, 800))
 
     name_surface = font.render('Archer', True, (0, 0, 0))
-    desc_surface = font.render('Dps = 2', True, (0, 0, 0))
-    cost_surface = font.render(f'${250}', True, (0, 0, 0))
+    desc_surface = font.render('Dps = 4', True, (0, 0, 0))
+    cost_surface = font.render(f'${400}', True, (0, 0, 0))
     screen.blit(name_surface, (1250, 60))
     screen.blit(desc_surface, (1250, 80))
     screen.blit(cost_surface, (1260, 170))
@@ -269,7 +268,9 @@ while running:
                 screen.blit(wizard, tower.rect)
         else: 
             if tower.type == "range":
-                if tick % 60 == 0 and (not tower.rect == towers[-1].rect or placing == False):
+                if tower.cooldown > 0:
+                    tower.cooldown -= 1
+                elif tower.cooldown == 0 and (not tower.rect == towers[-1].rect or placing == False):
                     first_enemy = None
                     best_progress = -1
 
@@ -284,7 +285,8 @@ while running:
                     
                     for enemy in enemies:
                             if enemy == first_enemy and not enemy.health <= 0:
-                                enemy.health -= 4
+                                enemy.health -= 8
+                                tower.cooldown = 120
                                 targetX = enemy.x
                                 targetY = enemy.y
                                 dx = targetX - tower.rect.centerx
@@ -292,12 +294,8 @@ while running:
                                 angle = math.degrees(math.atan2(-dy, dx))
                                 tower.angle = angle
                                 pygame.draw.line(screen, (255, 255, 255), (tower.rect.centerx, tower.rect.centery), (targetX, targetY), 5)
-                rotated_image = pygame.transform.rotate(archer, tower.angle)
-                rotated_rect = rotated_image.get_rect(center=tower.rect.center)
-                screen.blit(rotated_image, rotated_rect)
 
             elif tower.type == "short":
-                #screen.blit(knight, tower.rect)
                 if tower.cooldown > 0:
                     tower.cooldown -= 1
                 elif not tower.rect == towers[-1].rect or placing == False:
@@ -325,29 +323,36 @@ while running:
                                 dy = targetY - tower.rect.centery
                                 angle = math.degrees(math.atan2(-dy, dx))
                                 tower.angle = angle
-                
-                rotated_image = pygame.transform.rotate(knight, tower.angle)
-                rotated_rect = rotated_image.get_rect(center=tower.rect.center)
-                screen.blit(rotated_image, rotated_rect)
             elif tower.type == "area":
-                screen.blit(wizard, tower.rect)
                 if not tower.rect == towers[-1].rect or placing == False:
                     screen.blit(wizardArea, [tower.rect[0] - 110, tower.rect[1]- 110])
-                    screen.blit(wizard, tower.rect)
                     for enemy in enemies:
                         if math.hypot(tower.x - enemy.x, tower.y - enemy.y) < 120 and tick % 6 == 0:
                             enemy.health -= 1
+    for tower in towers:
+        if tower.type == 'area':
+            screen.blit(wizard, tower.rect)
+        elif tower.type == 'range':
+            rotated_image = pygame.transform.rotate(archer, tower.angle)
+            rotated_rect = rotated_image.get_rect(center=tower.rect.center)
+            screen.blit(rotated_image, rotated_rect)
+        elif tower.type == 'short':
+            rotated_image = pygame.transform.rotate(knight, tower.angle)
+            rotated_rect = rotated_image.get_rect(center=tower.rect.center)
+            screen.blit(rotated_image, rotated_rect)
     weapons = []
     for enemy in enemies:
         if enemy.health <= 0:
             enemies.pop(enemies.index(enemy))
             cash += 15
-        
-        if enemy.type != 'skeletonKing':
-            King = False
+        if enemy.frozen > 0:
+            enemy.frozen -= 1
         else:
-            King = True
-        enemy.move(King)
+            if enemy.type != 'skeletonKing':
+                King = False
+            else:
+                King = True
+            enemy.move(King)
     
         if enemy.x == 1200 and enemy.y == 620:
             enemies.pop(enemies.index(enemy))
