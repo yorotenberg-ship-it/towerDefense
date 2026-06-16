@@ -96,7 +96,7 @@ class Enemy:
             Enemy.rect.x = Enemy.x-40
             Enemy.rect.y = Enemy.y-40
 
-towers = [Tower(1250, 60, towersWidth, towersHeight, "seller", "range", 325), Tower(1250, 260, towersWidth, towersHeight, "seller", "short", 400), Tower(1250, 460, towersWidth, towersHeight ,"seller", "area", 550), Tower(1250, 660, towersWidth, towersHeight ,"seller", "base", 100)]
+towers = [Tower(1250, 60, towersWidth, towersHeight, "seller", "range", 325), Tower(1250, 260, towersWidth, towersHeight, "seller", "short", 400), Tower(1250, 460, towersWidth, towersHeight ,"seller", "area", 550), Tower(1250, 660, towersWidth, towersHeight ,"seller", "base", 150)]
 weapons, enemies, enemyQueue = [], [], []
 font = pygame.font.Font(None, 36)
 cash_content = f'Cash: {cash}$'
@@ -369,8 +369,8 @@ while running:
                             
                     for enemy in enemies:
                             if enemy == first_enemy and not enemy.health <= 0:
-                                enemy.health -= 2
-                                tower.damageDealt += 2
+                                enemy.health -= 3
+                                tower.damageDealt += 3
                                 tower.cooldown = 60
                                 targetX = enemy.x
                                 targetY = enemy.y
@@ -427,4 +427,4 @@ while running:
     screen.blit(health_surface, health_rect)
     screen.blit(wave_surface, wave_rect)
     pygame.display.flip()
-    #clock.tick(120)
+    clock.tick(120)
