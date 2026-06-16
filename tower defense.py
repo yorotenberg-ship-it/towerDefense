@@ -26,7 +26,9 @@ if True:
     archer = pygame.image.load('graphics/archer.png')
     archer = pygame.transform.scale(archer, (towersWidth, towersHeight))
     knight = pygame.image.load('graphics/knight.png')
-    knight = pygame.transform.scale(knight, (towersWidth + 20, towersHeight))
+    knight = pygame.transform.scale(knight, (towersWidth, towersHeight))
+    iceWarrior = pygame.image.load('graphics/iceWarrior.png')
+    iceWarrior = pygame.transform.scale(iceWarrior, (towersWidth + 20, towersHeight))
 LOOP_CENTER, LOOP_RADIUS = (600, 405), 210  
 
 
@@ -43,7 +45,7 @@ for i in range(100):
 wayPoints = ([(0, 195), (400, 195)] + loop_points + [(800, 620), (1200, 620)])
 
 class Tower:
-    def __init__ (Tower, towerX, towerY, width, height, towerType = None, sellerType = False, sellerCost = 0, angle = 0, cooldown = 0):
+    def __init__ (Tower, towerX, towerY, width, height, towerType = None, sellerType = False, sellerCost = 0, angle = 0, cooldown = 0, attacks = 0):
         Tower.x = towerX
         Tower.y = towerY
         Tower.type = towerType
@@ -53,6 +55,7 @@ class Tower:
         Tower.h = height
         Tower.angle = angle
         Tower.cooldown = cooldown
+        Tower.damageDealt = attacks
         Tower.rect = (pygame.Rect(towerX, towerY, width, height))
 
 class Enemy:
@@ -185,25 +188,39 @@ while running:
     name_surface = font.render('Ice Knight', True, (0, 0, 0))
     desc_surface = font.render('Slows Enemies', True, (0, 0, 0))
     cost_surface = font.render(f'${400}', True, (0, 0, 0))
-    screen.blit(name_surface, (1270, 260))
-    screen.blit(desc_surface, (1215, 280))
-    screen.blit(cost_surface, (1260, 370))
+    screen.blit(name_surface, (1270, 220))
+    screen.blit(desc_surface, (1215, 240))
+    screen.blit(cost_surface, (1260, 330))
 
     name_surface = font.render('Wizard', True, (0, 0, 0))
     desc_surface = font.render('Uses Magic', True, (0, 0, 0)) 
     cost_surface = font.render(f'${550}', True, (0, 0, 0))
-    screen.blit(name_surface, (1250, 460))
-    screen.blit(desc_surface, (1250, 480))
-    screen.blit(cost_surface, (1260, 570))
+    screen.blit(name_surface, (1250, 410))
+    screen.blit(desc_surface, (1250, 440))
+    screen.blit(cost_surface, (1260, 530))
+
+    name_surface = font.render('Knight', True, (0, 0, 0))
+    desc_surface = font.render('Dps = 2', True, (0, 0, 0)) 
+    cost_surface = font.render(f'${100}', True, (0, 0, 0))
+    screen.blit(name_surface, (1250, 620))
+    screen.blit(desc_surface, (1250, 640))
+    screen.blit(cost_surface, (1260, 730))
 
     for event in pygame.event.get():
             if event.type == pygame.QUIT or health <= 0:
                 running = False
+                for x, tower in enumerate(towers):
+                    if not tower.type == 'seller':
+                        print(f'Num: {x - 3}, Type: {tower.type}, Damage: {tower.damageDealt}')
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and not waveQueue == [] and enemies == [] and enemyQueue == []:
                     waveStart(waveQueue.pop(0))
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+                for x, tower in enumerate(towers):
+                    if not tower.type == 'seller':
+                        print(f'Num: {x - 3}, Type: {tower.type}, Damage: {tower.damageDealt}')
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
-                    enemyQueue.append(Enemy(1, "titan", 5, 0, 195, 5, 30))
+                    enemyQueue.append(Enemy(40, "bonerDragon", 12, 0, 195, 40, 30))
                 else:
                     if placing == False:
                         for tower in towers:
@@ -261,11 +278,13 @@ while running:
             if tower.sellerType == "range":
                 screen.blit(archer, tower.rect)
             elif tower.sellerType == "short":
-                screen.blit(knight, tower.rect)
+                screen.blit(iceWarrior, tower.rect)
             elif tower.sellerType == "seller":
                 pygame.draw.rect(screen, (0, 255, 255), tower.rect)
             elif tower.sellerType == "area":
                 screen.blit(wizard, tower.rect)
+            elif tower.sellerType == "base":
+                screen.blit(knight, tower.rect)
         else: 
             if tower.type == "range":
                 if tower.cooldown > 0:
@@ -273,7 +292,6 @@ while running:
                 elif tower.cooldown == 0 and (not tower.rect == towers[-1].rect or placing == False):
                     first_enemy = None
                     best_progress = -1
-
                     for enemy in enemies:
                         if not enemy.health <= 0:
                             targetX, targetY = wayPoints[enemy.wayPointIndex]
@@ -286,6 +304,7 @@ while running:
                     for enemy in enemies:
                             if enemy == first_enemy and not enemy.health <= 0:
                                 enemy.health -= 8
+                                tower.damageDealt += 8
                                 tower.cooldown = 120
                                 targetX = enemy.x
                                 targetY = enemy.y
@@ -325,10 +344,40 @@ while running:
                                 tower.angle = angle
             elif tower.type == "area":
                 if not tower.rect == towers[-1].rect or placing == False:
-                    screen.blit(wizardArea, [tower.rect[0] - 110, tower.rect[1]- 110])
+                    area_rect = wizardArea.get_rect(center=tower.rect.center)
+                    screen.blit(wizardArea, area_rect)
                     for enemy in enemies:
-                        if math.hypot(tower.x - enemy.x, tower.y - enemy.y) < 120 and tick % 6 == 0:
-                            enemy.health -= 2
+                        if math.hypot(tower.x - enemy.x, tower.y - enemy.y) < 150 and tick % 4 == 0:
+                            enemy.health -= 1
+                            tower.damageDealt += 1
+
+            elif tower.type == "base":
+                if tower.cooldown > 0:
+                    tower.cooldown -= 1
+                elif not tower.rect == towers[-1].rect or placing == False:
+                    first_enemy = None
+                    best_progress = -1
+                    for enemy in enemies:
+                        if math.hypot(tower.x - enemy.x, tower.y - enemy.y) < 200:
+                            if not enemy.health <= 0:
+                                targetX, targetY = wayPoints[enemy.wayPointIndex]
+                                dist_to_next = math.hypot(targetX - enemy.x, targetY - enemy.y)
+                                progress = enemy.wayPointIndex * 10000 - dist_to_next
+                                if progress > best_progress:
+                                    best_progress = progress
+                                    first_enemy = enemy
+                            
+                    for enemy in enemies:
+                            if enemy == first_enemy and not enemy.health <= 0:
+                                enemy.health -= 2
+                                tower.damageDealt += 2
+                                tower.cooldown = 60
+                                targetX = enemy.x
+                                targetY = enemy.y
+                                dx = targetX - tower.rect.centerx
+                                dy = targetY - tower.rect.centery
+                                angle = math.degrees(math.atan2(-dy, dx))
+                                tower.angle = angle
     for tower in towers:
         if tower.type == 'area':
             screen.blit(wizard, tower.rect)
@@ -337,6 +386,10 @@ while running:
             rotated_rect = rotated_image.get_rect(center=tower.rect.center)
             screen.blit(rotated_image, rotated_rect)
         elif tower.type == 'short':
+            rotated_image = pygame.transform.rotate(iceWarrior, tower.angle)
+            rotated_rect = rotated_image.get_rect(center=tower.rect.center)
+            screen.blit(rotated_image, rotated_rect)
+        elif tower.type == 'base':
             rotated_image = pygame.transform.rotate(knight, tower.angle)
             rotated_rect = rotated_image.get_rect(center=tower.rect.center)
             screen.blit(rotated_image, rotated_rect)
@@ -355,6 +408,7 @@ while running:
             enemy.move(King)
     
         if enemy.x == 1200 and enemy.y == 620:
+            print(f'Health Left: {enemy.health}')
             enemies.pop(enemies.index(enemy))
             health -= enemy.damage
         if enemy.type == 'titan':
@@ -373,4 +427,4 @@ while running:
     screen.blit(health_surface, health_rect)
     screen.blit(wave_surface, wave_rect)
     pygame.display.flip()
-    clock.tick(120)
+    #clock.tick(120)
