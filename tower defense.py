@@ -119,9 +119,18 @@ wave7 = [['bonerDragon', 3, 0]]
 wave8 = [['titan', 10, 0], ['skeleton', 5, 0], ['bonerDragon', 2, 0]]
 wave9 = [['necromancer', 1, 0]]
 wave10 = [['bonerDragon', 3, 0], ['necromancer', 1, 0]]
-wave11 = [['titan', 10, 0], ['air', 7, 0], ['bonerDragon', 20, 0]]
+wave11 = [['bonerDragon', 5, 0], ['air', 7, 0], ['bonerDragon', 8, 0]]
+wave12 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
+wave13 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
+wave14 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
+wave15 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
+wave16 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
+wave17 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
+wave18 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
+wave19 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
+wave20 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
 
-waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave10, wave11]
+waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave10, wave11, wave12, wave13, wave14, wave15, wave16, wave17, wave18, wave19, wave20]
 
 waves = len(waveQueue)
 def waveStart(wave):
@@ -129,16 +138,16 @@ def waveStart(wave):
     for enemy in wave:
         if enemy[0] == 'titan':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(5, "titan", 3, 0, 195, 5, enemy[2]))
+                enemyQueue.append(Enemy(4, "titan", 3, 0, 195, 5, enemy[2]))
         elif enemy[0] == 'skeleton':
             for x in range(enemy[1]):
                 enemyQueue.append(Enemy(10, "skeleton", 7, 0, 195, 10, enemy[2]))
         elif enemy[0] == 'bonerDragon':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(40, "bonerDragon", 12, 0, 195, 40, enemy[2]))
+                enemyQueue.append(Enemy(45, "bonerDragon", 12, 0, 195, 40, enemy[2]))
         elif enemy[0] == 'necromancer':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(200, "necromancer", 3, 0, 195, 200, enemy[2]))
+                enemyQueue.append(Enemy(250, "necromancer", 3, 0, 195, 200, enemy[2]))
         elif enemy[0] == 'air':
             for x in range(enemy[1]):
                 enemyQueue.append("air")
