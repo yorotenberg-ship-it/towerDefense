@@ -96,7 +96,7 @@ class Enemy:
             Enemy.rect.x = Enemy.x-40
             Enemy.rect.y = Enemy.y-40
 
-towers = [Tower(1250, 100, towersWidth, towersHeight, "seller", "range", 325), Tower(1250, 300, towersWidth, towersHeight, "seller", "short", 400), Tower(1250, 500, towersWidth, towersHeight ,"seller", "area", 550)]
+towers = [Tower(1250, 60, towersWidth, towersHeight, "seller", "range", 325), Tower(1250, 260, towersWidth, towersHeight, "seller", "short", 400), Tower(1250, 460, towersWidth, towersHeight ,"seller", "area", 550), Tower(1250, 660, towersWidth, towersHeight ,"seller", "base", 100)]
 weapons, enemies, enemyQueue = [], [], []
 font = pygame.font.Font(None, 36)
 cash_content = f'Cash: {cash}$'
@@ -124,7 +124,7 @@ wave12 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
 wave13 = [['skeleton', 25, 29], ['air', 7, 0], ['bonerDragon', 4, 0]]
 wave14 = [['necromancer', 3, 0]]
 wave15 = [['bonerDragon', 7, 0], ['air', 7, 0], ['necromancer', 2, 0]]
-wave16 = [['skeleton', 25, 29],['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
+wave16 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
 wave17 = [['bonerDragon', 4, 29], ['air', 7, 0], ['bonerDragon', 4, 29]]
 wave18 = [['necromancer', 4, 0]]
 wave19 = [['bonerDragon', 10, 10]]
@@ -150,7 +150,7 @@ def waveStart(wave):
                 enemyQueue.append(Enemy(200, "necromancer", 3, 0, 195, 200, enemy[2]))
         elif enemy[0] == 'skeletonKing':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(800, "skeletonKing", 2.2, 0, 195, 500, enemy[2]))
+                enemyQueue.append(Enemy(500, "skeletonKing", 2.2, 0, 195, 500, enemy[2]))
         elif enemy[0] == 'air':
             for x in range(enemy[1]):
                 enemyQueue.append("air")
@@ -180,23 +180,23 @@ while running:
 
     name_surface = font.render('Archer', True, (0, 0, 0))
     desc_surface = font.render('Fires Arrows', True, (0, 0, 0))
-    cost_surface = font.render(f'${325}', True, (0, 0, 0))
-    screen.blit(name_surface, (1250, 60))
-    screen.blit(desc_surface, (1250, 80))
-    screen.blit(cost_surface, (1260, 170))
+    cost_surface = font.render(f'${400}', True, (0, 0, 0))
+    screen.blit(name_surface, (1260, 20))
+    screen.blit(desc_surface, (1230, 40))
+    screen.blit(cost_surface, (1260, 130))
 
     name_surface = font.render('Ice Knight', True, (0, 0, 0))
     desc_surface = font.render('Slows Enemies', True, (0, 0, 0))
     cost_surface = font.render(f'${400}', True, (0, 0, 0))
-    screen.blit(name_surface, (1270, 220))
+    screen.blit(name_surface, (1240, 220))
     screen.blit(desc_surface, (1215, 240))
     screen.blit(cost_surface, (1260, 330))
 
     name_surface = font.render('Wizard', True, (0, 0, 0))
-    desc_surface = font.render('Uses Magic', True, (0, 0, 0)) 
+    desc_surface = font.render('Casts Spells', True, (0, 0, 0)) 
     cost_surface = font.render(f'${550}', True, (0, 0, 0))
     screen.blit(name_surface, (1250, 410))
-    screen.blit(desc_surface, (1250, 440))
+    screen.blit(desc_surface, (1220, 440))
     screen.blit(cost_surface, (1260, 530))
 
     name_surface = font.render('Knight', True, (0, 0, 0))
@@ -334,8 +334,8 @@ while running:
                             
                     for enemy in enemies:
                             if enemy == first_enemy and not enemy.health <= 0:
-                                enemy.frozen = 80
-                                tower.cooldown = 110
+                                enemy.frozen = 110
+                                tower.cooldown = 120
                                 targetX = enemy.x
                                 targetY = enemy.y
                                 dx = targetX - tower.rect.centerx
@@ -427,4 +427,4 @@ while running:
     screen.blit(health_surface, health_rect)
     screen.blit(wave_surface, wave_rect)
     pygame.display.flip()
-    clock.tick(60)
+    #clock.tick(120)
