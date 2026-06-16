@@ -15,8 +15,12 @@ if True:
     skeleton = pygame.transform.scale(skeleton, (80, 80))
     necromancer = pygame.image.load('graphics/necromancer.png')
     necromancer = pygame.transform.scale(necromancer, (110, 80))
+    skeletonKing = pygame.image.load('graphics/skeletonKing.png')
+    skeletonKing = pygame.transform.scale(skeletonKing, (80, 80))
     wizard = pygame.image.load('graphics/wizard.png')
     wizard = pygame.transform.scale(wizard, (towersWidth, towersHeight))
+    wizardArea = pygame.image.load('graphics/wizardArea.png')
+    wizardArea = pygame.transform.scale(wizardArea, (300, 300))
     dragon = pygame.image.load('graphics/dragon.png')
     dragon = pygame.transform.scale(dragon, (towersWidth, towersHeight))
     archer = pygame.image.load('graphics/archer.png')
@@ -49,18 +53,6 @@ class Tower:
         Tower.h = height
         Tower.angle = angle
         Tower.rect = (pygame.Rect(towerX, towerY, width, height))
-
-class Weapon:
-    def __init__(Weapon, startX, startY, goalX, goalY, damage, weaponType, radius = 0):
-        Weapon.goalX = goalX
-        Weapon.goalY = goalY
-        Weapon.damage = damage
-        Weapon.type = weaponType
-        Weapon.startX = startX
-        Weapon.startY = startY
-        Weapon.radius = radius
-        if not weaponType == 'area':
-            Weapon.rect = (pygame.Rect(startX, startY, 20, 20))
 
 class Enemy:
     def __init__(Enemy, health, enemyType, speed, x, y, damage, wait):
@@ -95,7 +87,7 @@ class Enemy:
         Enemy.rect.x = Enemy.x-40
         Enemy.rect.y = Enemy.y-40
 
-towers = [Tower(1250, 350, towersWidth, towersHeight, "seller", "range", 200), Tower(1250, 425, towersWidth, towersHeight, "seller", "short", 100), Tower(1250, 500, towersWidth, towersHeight ,"seller", "area", 50)]
+towers = [Tower(1250, 100, towersWidth, towersHeight, "seller", "range", 250), Tower(1250, 300, towersWidth, towersHeight, "seller", "short", 100), Tower(1250, 500, towersWidth, towersHeight ,"seller", "area", 550)]
 weapons, enemies, enemyQueue = [], [], []
 #enemies = []
 font = pygame.font.Font(None, 36)
@@ -109,7 +101,7 @@ health_rect = health_surface.get_rect(topleft=(1060, 50))
 
 spawnTimer = 0
 
-wave1 = [['titan', 5, 20]]
+wave1 = [['titan', 5, 0]]
 wave2 = [['titan', 10, 0]]
 wave3 = [['titan', 5, 0], ['skeleton', 3, 0]]
 wave4 = [['skeleton', 3, 0], ['titan', 5, 0], ['skeleton', 3, 0]]
@@ -121,14 +113,14 @@ wave9 = [['necromancer', 1, 0]]
 wave10 = [['bonerDragon', 3, 0], ['necromancer', 1, 0]]
 wave11 = [['bonerDragon', 5, 0], ['air', 7, 0], ['bonerDragon', 8, 0]]
 wave12 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
-wave13 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
-wave14 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
-wave15 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
+wave13 = [['skeleton', 25, 29], ['air', 7, 0], ['bonerDragon', 4, 0]]
+wave14 = [['necromancer', 3, 0]]
+wave15 = [['bonerDragon', 7, 0], ['air', 7, 0], ['necromancer', 2, 0]]
 wave16 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
-wave17 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
-wave18 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
-wave19 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
-wave20 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
+wave17 = [['bonerDragon', 4, 29], ['air', 7, 0], ['bonerDragon', 4, 29]]
+wave18 = [['necromancer', 4, 0]]
+wave19 = [['bonerDragon', 10, 10]]
+wave20 = [['skeletonKing', 1, 0], ['skeleton', 25, 0]]
 
 waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave10, wave11, wave12, wave13, wave14, wave15, wave16, wave17, wave18, wave19, wave20]
 
@@ -144,10 +136,13 @@ def waveStart(wave):
                 enemyQueue.append(Enemy(10, "skeleton", 7, 0, 195, 10, enemy[2]))
         elif enemy[0] == 'bonerDragon':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(45, "bonerDragon", 12, 0, 195, 40, enemy[2]))
+                enemyQueue.append(Enemy(40, "bonerDragon", 12, 0, 195, 40, enemy[2]))
         elif enemy[0] == 'necromancer':
             for x in range(enemy[1]):
-                enemyQueue.append(Enemy(250, "necromancer", 3, 0, 195, 200, enemy[2]))
+                enemyQueue.append(Enemy(200, "necromancer", 3, 0, 195, 200, enemy[2]))
+        elif enemy[0] == 'skeletonKing':
+            for x in range(enemy[1]):
+                enemyQueue.append(Enemy(800, "skeletonKing", 3, 0, 195, 500, enemy[2]))
         elif enemy[0] == 'air':
             for x in range(enemy[1]):
                 enemyQueue.append("air")
@@ -176,6 +171,27 @@ while running:
     pygame.draw.rect(screen, BROWN, (600, 560, 600, PATH_WIDTH))
     pygame.draw.rect(screen, GREY, (1200, 0, 200, 800))
 
+    name_surface = font.render('Archer', True, (0, 0, 0))
+    desc_surface = font.render('Dps = 4', True, (0, 0, 0))
+    cost_surface = font.render(f'${250}', True, (0, 0, 0))
+    screen.blit(name_surface, (1250, 60))
+    screen.blit(desc_surface, (1250, 80))
+    screen.blit(cost_surface, (1260, 170))
+
+    name_surface = font.render('Ice', True, (0, 0, 0))
+    desc_surface = font.render('Slows Enemies', True, (0, 0, 0))
+    cost_surface = font.render(f'${400}', True, (0, 0, 0))
+    screen.blit(name_surface, (1270, 260))
+    screen.blit(desc_surface, (1215, 280))
+    screen.blit(cost_surface, (1260, 370))
+
+    name_surface = font.render('Wizard', True, (0, 0, 0))
+    desc_surface = font.render('Dps = 10', True, (0, 0, 0)) 
+    cost_surface = font.render(f'${550}', True, (0, 0, 0))
+    screen.blit(name_surface, (1250, 460))
+    screen.blit(desc_surface, (1250, 480))
+    screen.blit(cost_surface, (1260, 570))
+
     for event in pygame.event.get():
             if event.type == pygame.QUIT or health <= 0:
                 running = False
@@ -183,7 +199,7 @@ while running:
                     waveStart(waveQueue.pop(0))
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
-                    enemies.append(Enemy(1, "titan", 5, 0, 195, 5))
+                    enemyQueue.append(Enemy(1, "titan", 5, 0, 195, 5, 30))
                 else:
                     if placing == False:
                         for tower in towers:
@@ -270,7 +286,7 @@ while running:
                                 dy = targetY - tower.rect.centery
                                 angle = math.degrees(math.atan2(-dy, dx))
                                 tower.angle = angle
-                                break
+                                pygame.draw.line(screen, (255, 255, 255), (tower.rect.centerx, tower.rect.centery), (targetX, targetY), 5)
                 rotated_image = pygame.transform.rotate(archer, tower.angle)
                 rotated_rect = rotated_image.get_rect(center=tower.rect.center)
                 screen.blit(rotated_image, rotated_rect)
@@ -283,16 +299,29 @@ while running:
             elif tower.type == "area":
                 screen.blit(wizard, tower.rect)
                 if not tower.rect == towers[-1].rect or placing == False:
-                    weapons.append(Weapon(tower.x + tower.w // 2, tower.y + tower.h // 2, 0, 0, 20, "area", 120))
+                    screen.blit(wizardArea, [tower.rect[0] - 110, tower.rect[1]- 110])
+                    screen.blit(wizard, tower.rect)
                     for enemy in enemies:
-                        if math.hypot(tower.x - enemy.x, tower.y - enemy.y) < 120 and tick % 10 == 0:
+                        if math.hypot(tower.x - enemy.x, tower.y - enemy.y) < 120 and tick % 6 == 0:
                             enemy.health -= 1
-    for weapon in weapons:
-        if weapon.type == 'range':
-            pygame.draw.rect(screen, (255, 255, 255), weapon.rect)
-        elif weapon.type == 'area':
-            pygame.draw.circle(screen, (0, 0, 255), (weapon.startX, weapon.startY), weapon.radius)
     weapons = []
+    """for tower in towers:
+        if tower.type == "seller":
+            if tower.sellerType == "range":
+                screen.blit(archer, tower.rect)
+            elif tower.sellerType == "short":
+                screen.blit(knight, tower.rect)
+            elif tower.sellerType == "seller":
+                pygame.draw.rect(screen, (0, 255, 255), tower.rect)
+            elif tower.sellerType == "area":
+                screen.blit(wizard, tower.rect)
+        else:
+            if tower.type == "range":
+                screen.blit(archer, tower.rect)
+            elif tower.type == "short":
+                screen.blit(knight, tower.rect)
+            elif tower.type == "area":
+                screen.blit(wizard, tower.rect)"""
     for enemy in enemies:
         if enemy.health <= 0:
             enemies.pop(enemies.index(enemy))
@@ -310,6 +339,8 @@ while running:
             screen.blit(skeleton, enemy.rect)
         elif enemy.type == 'necromancer':
             screen.blit(necromancer, enemy.rect)
+        elif enemy.type == 'skeletonKing':
+            screen.blit(skeletonKing, enemy.rect)
     if health <= 0:
         running = False
     screen.blit(cash_surface, cash_rect)
