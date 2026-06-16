@@ -266,7 +266,7 @@ while running:
                 screen.blit(wizard, tower.rect)
         else: 
             if tower.type == "range":
-                if tick % 120 == 0 and (not tower.rect == towers[-1].rect or placing == False):
+                if tick % 90 == 0 and (not tower.rect == towers[-1].rect or placing == False):
                     first_enemy = None
                     best_progress = -1
 
