@@ -26,7 +26,7 @@ if True:
     archer = pygame.image.load('graphics/archer.png')
     archer = pygame.transform.scale(archer, (towersWidth, towersHeight))
     knight = pygame.image.load('graphics/knight.png')
-    knight = pygame.transform.scale(knight, (towersWidth, towersHeight))
+    knight = pygame.transform.scale(knight, (towersWidth + 20, towersHeight))
 LOOP_CENTER, LOOP_RADIUS = (600, 405), 210  
 
 
@@ -43,7 +43,7 @@ for i in range(100):
 wayPoints = ([(0, 195), (400, 195)] + loop_points + [(800, 620), (1200, 620)])
 
 class Tower:
-    def __init__ (Tower, towerX, towerY, width, height, towerType = None, sellerType = False, sellerCost = 0, angle = 0):
+    def __init__ (Tower, towerX, towerY, width, height, towerType = None, sellerType = False, sellerCost = 0, angle = 0, cooldown = 0):
         Tower.x = towerX
         Tower.y = towerY
         Tower.type = towerType
@@ -52,10 +52,11 @@ class Tower:
         Tower.w = width
         Tower.h = height
         Tower.angle = angle
+        Tower.cooldown = cooldown
         Tower.rect = (pygame.Rect(towerX, towerY, width, height))
 
 class Enemy:
-    def __init__(Enemy, health, enemyType, speed, x, y, damage, wait):
+    def __init__(Enemy, health, enemyType, speed, x, y, damage, wait, frozen = 0):
         Enemy.health = health
         Enemy.type = enemyType
         Enemy.speed = speed
@@ -65,6 +66,7 @@ class Enemy:
         Enemy.wayPointIndex = 0
         Enemy.damage = damage
         Enemy.wait = wait
+        Enemy.frozen = frozen
 
 
     def move(Enemy, King):
@@ -294,12 +296,38 @@ while running:
                 rotated_image = pygame.transform.rotate(archer, tower.angle)
                 rotated_rect = rotated_image.get_rect(center=tower.rect.center)
                 screen.blit(rotated_image, rotated_rect)
-  
-                
-                    
 
             elif tower.type == "short":
-                screen.blit(knight, tower.rect)
+                #screen.blit(knight, tower.rect)
+                if tower.cooldown > 0:
+                    tower.cooldown -= 1
+                elif not tower.rect == towers[-1].rect or placing == False:
+                    first_enemy = None
+                    best_progress = -1
+                    for enemy in enemies:
+                        if math.hypot(tower.x - enemy.x, tower.y - enemy.y) < 200:
+                            if not enemy.health <= 0 and not enemy.type == "skeletonKing":
+                                targetX, targetY = wayPoints[enemy.wayPointIndex]
+                                dist_to_next = math.hypot(targetX - enemy.x, targetY - enemy.y)
+                                progress = enemy.wayPointIndex * 10000 - dist_to_next
+                                if progress > best_progress:
+                                    best_progress = progress
+                                    first_enemy = enemy
+                            
+                    for enemy in enemies:
+                            if enemy == first_enemy and not enemy.health <= 0:
+                                enemy.frozen = 60
+                                tower.cooldown = 120
+                                targetX = enemy.x
+                                targetY = enemy.y
+                                dx = targetX - tower.rect.centerx
+                                dy = targetY - tower.rect.centery
+                                angle = math.degrees(math.atan2(-dy, dx))
+                                tower.angle = angle
+                
+                rotated_image = pygame.transform.rotate(knight, tower.angle)
+                rotated_rect = rotated_image.get_rect(center=tower.rect.center)
+                screen.blit(rotated_image, rotated_rect)
             elif tower.type == "area":
                 screen.blit(wizard, tower.rect)
                 if not tower.rect == towers[-1].rect or placing == False:
