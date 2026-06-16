@@ -16,7 +16,7 @@ if True:
     necromancer = pygame.image.load('graphics/necromancer.png')
     necromancer = pygame.transform.scale(necromancer, (110, 80))
     skeletonKing = pygame.image.load('graphics/skeletonKing.png')
-    skeletonKing = pygame.transform.scale(skeletonKing, (80, 80))
+    skeletonKing = pygame.transform.scale(skeletonKing, (130, 130))
     wizard = pygame.image.load('graphics/wizard.png')
     wizard = pygame.transform.scale(wizard, (towersWidth, towersHeight))
     wizardArea = pygame.image.load('graphics/wizardArea.png')
@@ -67,7 +67,7 @@ class Enemy:
         Enemy.wait = wait
 
 
-    def move(Enemy):
+    def move(Enemy, King):
         if Enemy.wayPointIndex >= len(wayPoints):
             return
 
@@ -83,9 +83,13 @@ class Enemy:
         else:
             Enemy.x += (dx / dist) * Enemy.speed
             Enemy.y += (dy / dist) * Enemy.speed
-
-        Enemy.rect.x = Enemy.x-40
-        Enemy.rect.y = Enemy.y-40
+        
+        if King == True:
+            Enemy.rect.x = Enemy.x-70
+            Enemy.rect.y = Enemy.y-70
+        else:
+            Enemy.rect.x = Enemy.x-40
+            Enemy.rect.y = Enemy.y-40
 
 towers = [Tower(1250, 100, towersWidth, towersHeight, "seller", "range", 250), Tower(1250, 300, towersWidth, towersHeight, "seller", "short", 100), Tower(1250, 500, towersWidth, towersHeight ,"seller", "area", 550)]
 weapons, enemies, enemyQueue = [], [], []
@@ -101,7 +105,7 @@ health_rect = health_surface.get_rect(topleft=(1060, 50))
 
 spawnTimer = 0
 
-wave1 = [['titan', 5, 0]]
+wave1 = [['skeletonKing', 1, 0]]
 wave2 = [['titan', 10, 0]]
 wave3 = [['titan', 5, 0], ['skeleton', 3, 0]]
 wave4 = [['skeleton', 3, 0], ['titan', 5, 0], ['skeleton', 3, 0]]
@@ -111,7 +115,7 @@ wave7 = [['bonerDragon', 3, 0]]
 wave8 = [['titan', 10, 0], ['skeleton', 5, 0], ['bonerDragon', 2, 0]]
 wave9 = [['necromancer', 1, 0]]
 wave10 = [['bonerDragon', 3, 0], ['necromancer', 1, 0]]
-wave11 = [['bonerDragon', 5, 0], ['air', 7, 0], ['bonerDragon', 8, 0]]
+wave11 = [['bonerDragon', 4, 0], ['air', 7, 0], ['bonerDragon', 3, 0]]
 wave12 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
 wave13 = [['skeleton', 25, 29], ['air', 7, 0], ['bonerDragon', 4, 0]]
 wave14 = [['necromancer', 3, 0]]
@@ -120,7 +124,7 @@ wave16 = [['bonerDragon', 5, 0], ['air', 7, 0], ['necromancer', 2, 0]]
 wave17 = [['bonerDragon', 4, 29], ['air', 7, 0], ['bonerDragon', 4, 29]]
 wave18 = [['necromancer', 4, 0]]
 wave19 = [['bonerDragon', 10, 10]]
-wave20 = [['skeletonKing', 1, 0], ['skeleton', 25, 0]]
+wave20 = [['skeletonKing', 1, 0]]
 
 waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave10, wave11, wave12, wave13, wave14, wave15, wave16, wave17, wave18, wave19, wave20]
 
@@ -264,7 +268,7 @@ while running:
                 screen.blit(wizard, tower.rect)
         else: 
             if tower.type == "range":
-                if tick % 90 == 0 and (not tower.rect == towers[-1].rect or placing == False):
+                if tick % 60 == 0 and (not tower.rect == towers[-1].rect or placing == False):
                     first_enemy = None
                     best_progress = -1
 
@@ -305,28 +309,16 @@ while running:
                         if math.hypot(tower.x - enemy.x, tower.y - enemy.y) < 120 and tick % 6 == 0:
                             enemy.health -= 1
     weapons = []
-    """for tower in towers:
-        if tower.type == "seller":
-            if tower.sellerType == "range":
-                screen.blit(archer, tower.rect)
-            elif tower.sellerType == "short":
-                screen.blit(knight, tower.rect)
-            elif tower.sellerType == "seller":
-                pygame.draw.rect(screen, (0, 255, 255), tower.rect)
-            elif tower.sellerType == "area":
-                screen.blit(wizard, tower.rect)
-        else:
-            if tower.type == "range":
-                screen.blit(archer, tower.rect)
-            elif tower.type == "short":
-                screen.blit(knight, tower.rect)
-            elif tower.type == "area":
-                screen.blit(wizard, tower.rect)"""
     for enemy in enemies:
         if enemy.health <= 0:
             enemies.pop(enemies.index(enemy))
             cash += 15
-        enemy.move()
+        
+        if enemy.type != 'skeletonKing':
+            King = False
+        else:
+            King = True
+        enemy.move(King)
     
         if enemy.x == 1200 and enemy.y == 620:
             enemies.pop(enemies.index(enemy))
