@@ -152,7 +152,7 @@ round_ended = False
 tick = 0
 while running:
     tick += 1
-    tick = tick % 60
+    #tick = tick % 60
     mouseX, mouseY = pygame.mouse.get_pos()
 
     GREEN = (82, 130, 37)
@@ -172,7 +172,7 @@ while running:
     pygame.draw.rect(screen, GREY, (1200, 0, 200, 800))
 
     name_surface = font.render('Archer', True, (0, 0, 0))
-    desc_surface = font.render('Dps = 4', True, (0, 0, 0))
+    desc_surface = font.render('Dps = 2', True, (0, 0, 0))
     cost_surface = font.render(f'${250}', True, (0, 0, 0))
     screen.blit(name_surface, (1250, 60))
     screen.blit(desc_surface, (1250, 80))
@@ -233,7 +233,7 @@ while running:
             enemies.append(enemyQueue.pop(0))
             
         else:
-            spawnTimer = int(enemyQueue[0].wait)
+            spawnTimer = 0
             enemyQueue.pop(0)
         if enemyQueue == []:
             round_ended = True
@@ -264,7 +264,7 @@ while running:
                 screen.blit(wizard, tower.rect)
         else: 
             if tower.type == "range":
-                if tick % 60 == 0 and (not tower.rect == towers[-1].rect or placing == False):
+                if tick % 120 == 0 and (not tower.rect == towers[-1].rect or placing == False):
                     first_enemy = None
                     best_progress = -1
 
@@ -347,4 +347,4 @@ while running:
     screen.blit(health_surface, health_rect)
     screen.blit(wave_surface, wave_rect)
     pygame.display.flip()
-    clock.tick(60)
+    clock.tick(120)
