@@ -440,3 +440,4 @@ while running:
     screen.blit(wave_surface, wave_rect)
     screen.blit(help_surface, help_rect)
     pygame.display.flip()
+    clock.tick(60)
