@@ -96,7 +96,7 @@ class Enemy:
             Enemy.rect.x = Enemy.x-40
             Enemy.rect.y = Enemy.y-40
 
-towers = [Tower(1250, 60, towersWidth, towersHeight, "seller", "range", 325), Tower(1250, 260, towersWidth, towersHeight, "seller", "short", 400), Tower(1250, 460, towersWidth, towersHeight ,"seller", "area", 550), Tower(1250, 660, towersWidth, towersHeight ,"seller", "base", 150)]
+towers = [Tower(1250, 60, towersWidth, towersHeight, "seller", "range", 325), Tower(1250, 260, towersWidth, towersHeight, "seller", "short", 400), Tower(1250, 460, towersWidth, towersHeight ,"seller", "area", 550), Tower(1250, 660, towersWidth, towersHeight ,"seller", "base", 100)]
 weapons, enemies, enemyQueue = [], [], []
 font = pygame.font.Font(None, 36)
 cash_content = f'Cash: {cash}$'
@@ -180,7 +180,7 @@ while running:
 
     name_surface = font.render('Archer', True, (0, 0, 0))
     desc_surface = font.render('Fires Arrows', True, (0, 0, 0))
-    cost_surface = font.render(f'${400}', True, (0, 0, 0))
+    cost_surface = font.render(f'${325}', True, (0, 0, 0))
     screen.blit(name_surface, (1260, 20))
     screen.blit(desc_surface, (1230, 40))
     screen.blit(cost_surface, (1260, 130))
@@ -264,12 +264,14 @@ while running:
     if placing == True:
         towers[-1] = Tower(mouseX- towersWidth // 2, mouseY - towersHeight // 2, towersWidth, towersHeight, placingType)
     currentWave = waves - len(waveQueue)
-
-    wave_content = f'Wave: {currentWave}'
+ 
+    wave_content = f'Wave: {currentWave}, & press space to start next wave'
     wave_surface = font.render(wave_content, True, (255, 255, 255))
     wave_rect = wave_surface.get_rect(topleft=(10, 10)) 
+
     cash_content = f'Cash: {cash}$'
     cash_surface = font.render(cash_content, True, (255, 255, 255))
+
     health_content = f'Health: {health}'
     health_surface = font.render(health_content, True, (255, 255, 255))
 
@@ -369,8 +371,8 @@ while running:
                             
                     for enemy in enemies:
                             if enemy == first_enemy and not enemy.health <= 0:
-                                enemy.health -= 3
-                                tower.damageDealt += 3
+                                enemy.health -= 2
+                                tower.damageDealt += 2
                                 tower.cooldown = 60
                                 targetX = enemy.x
                                 targetY = enemy.y
@@ -427,4 +429,3 @@ while running:
     screen.blit(health_surface, health_rect)
     screen.blit(wave_surface, wave_rect)
     pygame.display.flip()
-    clock.tick(120)
