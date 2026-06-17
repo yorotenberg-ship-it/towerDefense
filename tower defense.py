@@ -424,14 +424,14 @@ while running:
         elif enemy.type == 'skeletonKing':
             screen.blit(skeletonKing, enemy.rect)
 
-    if len(enemies) == 0:
+    if len(enemies) == 0 and enemyQueue == []:
         help_content = 'press space to start next wave'
         help_surface = font.render(help_content, True, (255, 255, 255))
-        help_rect = help_surface.get_rect(topleft=(10, 30))
+        help_rect = help_surface.get_rect(topleft=(400, 10))
     else:
         help_content = ''
         help_surface = font.render(help_content, True, (255, 255, 255))
-        help_rect = help_surface.get_rect(topleft=(10, 30))
+        help_rect = help_surface.get_rect(topleft=(400, 10))
 
     if health <= 0:
         running = False
@@ -440,4 +440,4 @@ while running:
     screen.blit(wave_surface, wave_rect)
     screen.blit(help_surface, help_rect)
     pygame.display.flip()
-    clock.tick(60)
+    clock.tick(120)
