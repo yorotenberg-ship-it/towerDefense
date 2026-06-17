@@ -4,7 +4,7 @@ pygame.display.set_caption("Tower Defense Game")
 pygame.init()
 screen = pygame.display.set_mode((1400, 800))
 placing, down, collide, on_path, placingType, running = False, False, False, False, None, True
-cash, health = 500, 100
+cash, health = 550, 100
 towersWidth, towersHeight = 80, 80
 if True:
     titan = pygame.image.load('graphics/titan.png')
@@ -111,7 +111,7 @@ health_rect = health_surface.get_rect(topleft=(1060, 50))
 
 spawnTimer = 0
 
-wave1 = [['titan', 5, 0]]
+wave1 = [['titan', 999, 25]]
 wave2 = [['titan', 10, 0]]
 wave3 = [['titan', 5, 0], ['skeleton', 3, 0]]
 wave4 = [['skeleton', 3, 0], ['titan', 5, 0], ['skeleton', 3, 0]]
@@ -131,8 +131,13 @@ wave17 = [['bonerDragon', 4, 29], ['air', 7, 0], ['bonerDragon', 4, 29]]
 wave18 = [['necromancer', 4, 0]]
 wave19 = [['bonerDragon', 10, 10]]
 wave20 = [['skeletonKing', 1, 0]]
+wave21 = [['skeleton', 50, 29], ['necromancer', 1,0]]
+wave22 = [['necromancer', 6, 10], ['bonerDragon', 5, 15]]
+wave23 = [['skeleton', 35, 29], ['air', 7, 0], ['bonerDragon', 5, 15], ['air', 7, 0], ['skeleton', 35, 29], ['air', 7, 0], ['bonerDragon', 5, 15]]
+wave24 = [['bonerDragon', 7, 15], ['air', 7, 0], ['skeletonKing', 1, 0]]
+wave25 = [['skeletonKing', 2, 0]]
 
-waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave10, wave11, wave12, wave13, wave14, wave15, wave16, wave17, wave18, wave19, wave20]
+waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave10, wave11, wave12, wave13, wave14, wave15, wave16, wave17, wave18, wave19, wave20, wave21, wave22, wave23, wave24, wave25]
 
 waves = len(waveQueue)
 def waveStart(wave):
@@ -202,10 +207,10 @@ while running:
     screen.blit(cost_surface, (1260, 530))
 
     name_surface = font.render('Knight', True, (0, 0, 0))
-    desc_surface = font.render('Dps = 2', True, (0, 0, 0)) 
+    desc_surface = font.render('Stabs Enemies', True, (0, 0, 0)) 
     cost_surface = font.render(f'${100}', True, (0, 0, 0))
     screen.blit(name_surface, (1250, 620))
-    screen.blit(desc_surface, (1250, 640))
+    screen.blit(desc_surface, (1210, 640))
     screen.blit(cost_surface, (1260, 730))
 
     for event in pygame.event.get():
@@ -271,6 +276,10 @@ while running:
     wave_content = f'Wave: {currentWave}'
     wave_surface = font.render(wave_content, True, (255, 255, 255))
     wave_rect = wave_surface.get_rect(topleft=(10, 10)) 
+
+    fps_content = f'FPS: {int(clock.get_fps())}'
+    fps_surface = font.render(fps_content, True, (255, 255, 255))
+    fps_rect = fps_surface.get_rect(topleft=(10, 30)) 
 
     cash_content = f'Cash: {cash}$'
     cash_surface = font.render(cash_content, True, (255, 255, 255))
@@ -427,18 +436,19 @@ while running:
         elif enemy.type == 'skeletonKing':
             screen.blit(skeletonKing, enemy.rect)
 
-    if len(enemies) == 0:
+    if len(enemies) == 0 and enemyQueue == []:
         help_content = 'press space to start next wave'
         help_surface = font.render(help_content, True, (255, 255, 255))
-        help_rect = help_surface.get_rect(topleft=(10, 30))
+        help_rect = help_surface.get_rect(topleft=(400, 10))
     else:
         help_content = ''
         help_surface = font.render(help_content, True, (255, 255, 255))
-        help_rect = help_surface.get_rect(topleft=(10, 30))
+        help_rect = help_surface.get_rect(topleft=(400, 10))
 
     screen.blit(cash_surface, cash_rect)
     screen.blit(health_surface, health_rect)
     screen.blit(wave_surface, wave_rect)
     screen.blit(help_surface, help_rect)
+    screen.blit(fps_surface, fps_rect)
     pygame.display.flip()
-    clock.tick(60)
+    clock.tick(120)
