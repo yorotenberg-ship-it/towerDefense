@@ -29,6 +29,8 @@ if True:
     knight = pygame.transform.scale(knight, (towersWidth, towersHeight))
     iceWarrior = pygame.image.load('graphics/iceWarrior.png')
     iceWarrior = pygame.transform.scale(iceWarrior, (towersWidth + 20, towersHeight))
+    death = pygame.image.load('graphics/death.png')
+    death = pygame.transform.scale(death, (1400, 800))
 LOOP_CENTER, LOOP_RADIUS = (600, 405), 210  
 
 
@@ -208,6 +210,7 @@ while running:
 
     for event in pygame.event.get():
             if event.type == pygame.QUIT or health <= 0:
+                screen.blit(death, (0, 0))
                 running = False
                 for x, tower in enumerate(towers):
                     if not tower.type == 'seller':
@@ -433,8 +436,6 @@ while running:
         help_surface = font.render(help_content, True, (255, 255, 255))
         help_rect = help_surface.get_rect(topleft=(10, 30))
 
-    if health <= 0:
-        running = False
     screen.blit(cash_surface, cash_rect)
     screen.blit(health_surface, health_rect)
     screen.blit(wave_surface, wave_rect)
