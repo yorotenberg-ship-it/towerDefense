@@ -4,7 +4,7 @@ pygame.display.set_caption("Tower Defense Game")
 pygame.init()
 screen = pygame.display.set_mode((1400, 800))
 placing, down, collide, on_path, placingType, running = False, False, False, False, None, True
-cash, health = 500, 100
+cash, health = 550, 100
 towersWidth, towersHeight = 80, 80
 if True:
     titan = pygame.image.load('graphics/titan.png')
@@ -109,7 +109,7 @@ health_rect = health_surface.get_rect(topleft=(1060, 50))
 
 spawnTimer = 0
 
-wave1 = [['titan', 5, 0]]
+wave1 = [['titan', 999, 25]]
 wave2 = [['titan', 10, 0]]
 wave3 = [['titan', 5, 0], ['skeleton', 3, 0]]
 wave4 = [['skeleton', 3, 0], ['titan', 5, 0], ['skeleton', 3, 0]]
@@ -268,6 +268,10 @@ while running:
     wave_content = f'Wave: {currentWave}'
     wave_surface = font.render(wave_content, True, (255, 255, 255))
     wave_rect = wave_surface.get_rect(topleft=(10, 10)) 
+
+    fps_content = f'FPS: {int(clock.get_fps())}'
+    fps_surface = font.render(fps_content, True, (255, 255, 255))
+    fps_rect = fps_surface.get_rect(topleft=(10, 30)) 
 
     cash_content = f'Cash: {cash}$'
     cash_surface = font.render(cash_content, True, (255, 255, 255))
@@ -439,5 +443,6 @@ while running:
     screen.blit(health_surface, health_rect)
     screen.blit(wave_surface, wave_rect)
     screen.blit(help_surface, help_rect)
+    screen.blit(fps_surface, fps_rect)
     pygame.display.flip()
     clock.tick(120)
