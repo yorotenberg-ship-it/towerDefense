@@ -200,10 +200,10 @@ while running:
     screen.blit(cost_surface, (1260, 530))
 
     name_surface = font.render('Knight', True, (0, 0, 0))
-    desc_surface = font.render('Dps = 2', True, (0, 0, 0)) 
+    desc_surface = font.render('Stabs Enemies', True, (0, 0, 0)) 
     cost_surface = font.render(f'${100}', True, (0, 0, 0))
     screen.blit(name_surface, (1250, 620))
-    screen.blit(desc_surface, (1250, 640))
+    screen.blit(desc_surface, (1210, 640))
     screen.blit(cost_surface, (1260, 730))
 
     for event in pygame.event.get():
