@@ -129,8 +129,13 @@ wave17 = [['bonerDragon', 4, 29], ['air', 7, 0], ['bonerDragon', 4, 29]]
 wave18 = [['necromancer', 4, 0]]
 wave19 = [['bonerDragon', 10, 10]]
 wave20 = [['skeletonKing', 1, 0]]
+wave21 = [['skeleton', 50, 29], ['necromancer', 1,0]]
+wave22 = [['necromancer', 6, 10], ['bonerDragon', 5, 15]]
+wave23 = [['skeleton', 35, 29], ['air', 7, 0], ['bonerDragon', 5, 15], ['air', 7, 0], ['skeleton', 35, 29], ['air', 7, 0], ['bonerDragon', 5, 15]]
+wave24 = [['bonerDragon', 7, 15], ['air', 7, 0], ['skeletonKing', 1, 0]]
+wave25 = [['skeletonKing', 2, 0]]
 
-waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave10, wave11, wave12, wave13, wave14, wave15, wave16, wave17, wave18, wave19, wave20]
+waveQueue = [wave1, wave2, wave3, wave4, wave5, wave6, wave7, wave8, wave9, wave10, wave11, wave12, wave13, wave14, wave15, wave16, wave17, wave18, wave19, wave20, wave21, wave22, wave23, wave24, wave25]
 
 waves = len(waveQueue)
 def waveStart(wave):
