@@ -111,7 +111,7 @@ health_rect = health_surface.get_rect(topleft=(1060, 50))
 
 spawnTimer = 0
 
-wave1 = [['titan', 999, 25]]
+wave1 = [['titan', 5, 0]]
 wave2 = [['titan', 10, 0]]
 wave3 = [['titan', 5, 0], ['skeleton', 3, 0]]
 wave4 = [['skeleton', 3, 0], ['titan', 5, 0], ['skeleton', 3, 0]]
