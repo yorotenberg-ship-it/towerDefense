@@ -111,7 +111,7 @@ while running:
             if tower.type == "range":
                 pygame.draw.rect(screen, (255, 0, 0), tower.rect)
                 if tick == 0 and (not tower.rect == towers[-1].rect or placing == False):
-                    if not enemies == []
+                    if not enemies == []:
                         closest = None
                         closestDist = 'inf'
                         for enemy in enemies:
