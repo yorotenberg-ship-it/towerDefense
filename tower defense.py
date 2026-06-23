@@ -348,7 +348,7 @@ while running:
                             elif tower.type == 'area':
                                 enemy.health -= tower.damage
                     tower.cooldown = tower.baseCooldown
-                if not tower.rect == towers[-1].rect and placing == True:
+                if not tower.rect == towers[-1].rect or placing == False and tower.type == 'area':
                     area_rect = wizardArea.get_rect(center=tower.rect.center)
                     screen.blit(wizardArea, area_rect)
 
