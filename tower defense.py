@@ -5,7 +5,7 @@ pygame.display.set_caption("Tower Defense Game")
 pygame.init()
 screen = pygame.display.set_mode((1400, 800))
 placing, down, collide, on_path, placingType, running = False, False, False, False, None, True
-cash, health, tick = 500, 100, 0
+cash, health, tick = 50000, 100, 0
 towersWidth, towersHeight = 80, 80
 if True:
     titan = pygame.image.load('graphics/titan.png')
@@ -114,7 +114,7 @@ health_rect = health_surface.get_rect(topleft=(1060, 50))
 
 spawnTimer = 0
 
-wave1 = [['skeletonKing', 5, 0]]
+wave1 = [['titan', 5, 0]]
 wave2 = [['titan', 10, 0]]
 wave3 = [['titan', 5, 0], ['skeleton', 3, 0]]
 wave4 = [['skeleton', 3, 0], ['titan', 5, 0], ['skeleton', 3, 0]]
@@ -153,6 +153,7 @@ LOOP_CENTER = (600, 405)
 LOOP_OUTER = 265
 LOOP_INNER = 155
 waves = len(waveQueue)
+
 def waveStart(wave):
     global cash, enemies, enemyQueue
     for enemy in wave:
@@ -212,6 +213,18 @@ def draw ():
     screen.blit(cost_surface, (1260, 730))
 
 round_ended = False
+def checkFirst():
+    first_enemy = None
+    best_progress = -1
+    for enemy in enemies:
+        if not enemy.health <= 0:
+            targetX, targetY = wayPoints[enemy.wayPointIndex]
+            dist_to_next = math.hypot(targetX - enemy.x, targetY - enemy.y)
+            progress = enemy.wayPointIndex * 10000 - dist_to_next
+            if progress > best_progress:
+                best_progress = progress
+                first_enemy = enemy
+    return first_enemy
 
 while running:
     if health > 0:
@@ -224,13 +237,13 @@ while running:
                     running = False
                     for x, tower in enumerate(towers):
                         if not tower.type == 'seller':
-                            print(f'Num: {x - 3}, Type: {tower.type}, Damage: {tower.damageDealt}')
+                            print(f'Num: {x - 3}, Type: {tower.type}, Damage Done: {tower.damageDealt}, Damage Stat: {tower.damage}, Cooldown: {tower.baseCooldown}, Range: {tower.range}')
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and not waveQueue == [] and enemies == [] and enemyQueue == []:
                         waveStart(waveQueue.pop(0))
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
                     for x, tower in enumerate(towers):
                         if not tower.type == 'seller':
-                            print(f'Num: {x - 3}, Type: {tower.type}, Damage: {tower.damageDealt}')
+                            print(f'Num: {x - 3}, Type: {tower.type}, Damage Done: {tower.damageDealt}, Damage Stat: {tower.damage}, Cooldown: {tower.baseCooldown}, Range: {tower.range}')
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if placing == False:
@@ -240,8 +253,6 @@ while running:
                                         placing = True
                                         towers.append(Tower(tower.damage, tower.range, tower.baseCooldown, mouseX - tower.w  //  2, mouseY - tower.h  //  2, towersWidth, towersHeight, tower.sellerType))
                                         towers[-1].cost = tower.cost
-                                        print("Seller cost:", tower.cost)
-                                        print("Tower cost:", towers[-1].cost)
                                         cash -= tower.cost
                                         placingType = tower.sellerType
                                         break
@@ -314,8 +325,34 @@ while running:
                     screen.blit(wizard, tower.rect)
                 elif tower.sellerType == "knight":
                     screen.blit(knight, tower.rect)
-            else: 
-                if tower.type == 'archer':
+            else:
+                if tower.cooldown > 0:
+                    tower.cooldown -= 1
+                elif not tower.rect == towers[-1].rect or placing == False:
+                    if tower.type == 'archer' or tower.type == 'knight' or tower.type == 'iceWarrior':
+                        first_enemy = checkFirst()
+                    else: first_enemy = None
+                    for enemy in enemies:
+                        if math.hypot(tower.x - enemy.x, tower.y - enemy.y) < tower.range and enemy.health > 0:
+                            if not first_enemy == None:
+                                if enemy == first_enemy:
+                                    enemy.health -= tower.damage
+                                    if tower.type == 'iceWarrior':
+                                        enemy.frozen = 110
+                                    dx = enemy.x - tower.rect.centerx
+                                    dy = enemy.y - tower.rect.centery
+                                    tower.angle = math.degrees(math.atan2(-dy, dx))
+                                elif tower.type == 'iceWarrior':
+                                    if enemy.frozen < 20:
+                                        enemy.frozen = 20
+                            elif tower.type == 'area':
+                                enemy.health -= tower.damage
+                    tower.cooldown = tower.baseCooldown
+                if not tower.rect == towers[-1].rect and placing == True:
+                    area_rect = wizardArea.get_rect(center=tower.rect.center)
+                    screen.blit(wizardArea, area_rect)
+
+                """if tower.type == 'archer':
                     if tower.cooldown > 0:
                         tower.cooldown -= 1
                     elif tower.cooldown == 0 and (not tower.rect == towers[-1].rect or placing == False):
@@ -406,7 +443,7 @@ while running:
                                     dx = targetX - tower.rect.centerx
                                     dy = targetY - tower.rect.centery
                                     angle = math.degrees(math.atan2(-dy, dx))
-                                    tower.angle = angle
+                                    tower.angle = angle"""
 
                 
         for tower in towers:
@@ -429,7 +466,7 @@ while running:
             if enemy.health <= 0:
                 enemies.pop(enemies.index(enemy))
                 cash += 15
-            if enemy.frozen > 0:
+            if enemy.frozen > 0 and not enemy.type == 'skeletonKing':
                 enemy.frozen -= 1
             else:
                 enemy.move()
