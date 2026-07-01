@@ -21,7 +21,7 @@ if True:
     wizard = pygame.image.load('graphics/wizard.png')
     wizard = pygame.transform.scale(wizard, (towersWidth, towersHeight))
     wizardArea = pygame.image.load('graphics/wizardArea.png')
-    wizardArea = pygame.transform.scale(wizardArea, (300, 300))
+    wizardArea = pygame.transform.scale(wizardArea, (350, 350))
     dragon = pygame.image.load('graphics/dragon.png')
     dragon = pygame.transform.scale(dragon, (towersWidth, towersHeight))
     archer = pygame.image.load('graphics/archer.png')
@@ -35,8 +35,8 @@ if True:
 LOOP_CENTER, LOOP_RADIUS = (600, 405), 210  
 
 loop_points = []
-for i in range(100):
-    angle = math.radians(-90 + i * 5.1)
+for i in range(52):
+    angle = math.radians(-90 + i * 10)
 
     x = LOOP_CENTER[0] + math.cos(angle) * LOOP_RADIUS
     y = LOOP_CENTER[1] + math.sin(angle) * LOOP_RADIUS
@@ -44,7 +44,8 @@ for i in range(100):
     loop_points.append((x, y))
 
 wayPoints = ([(0, 195), (400, 195)] + loop_points + [(800, 620), (1200, 620)])
-
+for point in wayPoints:
+    pygame.draw.circle(screen, (255, 0, 0), point, 5)
 class Tower:
     def __init__ (Tower, damage, area, baseCooldown, towerX, towerY, width, height, towerType = None, sellerType = False, sellerCost = 0, angle = 0, cooldown = 0, attacks = 0):
         Tower.x = towerX
@@ -64,12 +65,13 @@ class Tower:
         Tower.rect = (pygame.Rect(towerX, towerY, width, height))
 
 class Enemy:
-    def __init__(Enemy, health, enemyType, speed, x, y, damage, wait, frozen = 0):
+    def __init__(Enemy, health, enemyType, speed, x, y, damage, wait, frozen = 0, angle = 0):
         Enemy.health = health
         Enemy.type = enemyType
         Enemy.speed = speed
         Enemy.x = x
         Enemy.y = y
+        Enemy.angle = angle
         Enemy.rect = pygame.Rect(x, y, 40, 40)
         Enemy.wayPointIndex = 0
         Enemy.damage = damage
@@ -90,6 +92,9 @@ class Enemy:
             Enemy.x = targetX
             Enemy.y = targetY
             Enemy.wayPointIndex += 1
+            ddx = targetX - Enemy.rect.centerx
+            ddy = targetY - Enemy.rect.centery
+            Enemy.angle = math.degrees(math.atan2(-ddy, ddx))
         else:
             Enemy.x += (dx / dist) * Enemy.speed
             Enemy.y += (dy / dist) * Enemy.speed
@@ -378,7 +383,7 @@ while running:
             else:
                 enemy.move()
         
-            if enemy.x == 1200 and enemy.y == 620:
+            if enemy.wayPointIndex >= len(wayPoints):
                 print(f'Health Left: {enemy.health}')
                 enemies.pop(enemies.index(enemy))
                 health -= enemy.damage
@@ -407,6 +412,8 @@ while running:
         screen.blit(wave_surface, wave_rect)
         screen.blit(help_surface, help_rect)
         screen.blit(fps_surface, fps_rect)
+        for point in wayPoints:
+            pygame.draw.circle(screen, (255, 0, 0), point, 5)
         pygame.display.flip()
         clock.tick(120)
     else:
